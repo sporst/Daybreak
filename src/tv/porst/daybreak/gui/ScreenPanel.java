@@ -199,12 +199,11 @@ public class ScreenPanel extends JPanel
 			{
 				screen.setBlock(mouseCol, mouseRow, selectedBlock);
 			}
-			else if (SwingUtilities.isRightMouseButton(event))
+			else if (SwingUtilities.isRightMouseButton(event) && selectedBlock != null)
 			{
 				setSelectedBlock(null);
 			}
-
-			if (event.isPopupTrigger())
+			else if (event.isPopupTrigger())
 			{
 				showPopupMenu(event, block);
 			}

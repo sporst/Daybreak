@@ -1,9 +1,11 @@
 package tv.porst.daybreak.gui;
 
 import java.awt.BorderLayout;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
 import tv.porst.daybreak.model.Block;
@@ -99,9 +101,12 @@ public class MainWindow extends JFrame
 	private class InternalBlockPanelListener implements IBlockPanelListener
 	{
 		@Override
-		public void clickedBlock(final Block block)
+		public void clickedBlock(final MouseEvent event, final Block block)
 		{
-			screenPanel.setSelectedBlock(block);
+			if (SwingUtilities.isLeftMouseButton(event))
+			{
+				screenPanel.setSelectedBlock(block);
+			}
 		}
 
 		@Override

@@ -17,7 +17,7 @@ public class BlockBitmap extends BufferedImage
 	{
 		super(16, 16, TYPE_3BYTE_BGR);
 
-		DEFAULT_TILE = new TileBitmap(new TileData(new byte[64]), 0, palette);
+		DEFAULT_TILE = new TileBitmap(new TileData(0, new byte[64]), 0, palette);
 
 		final BlockAttribute attribute = block.getAttribute();
 

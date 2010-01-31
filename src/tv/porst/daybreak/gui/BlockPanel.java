@@ -5,13 +5,23 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
+import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 
 import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
+import net.sourceforge.jnhf.romfile.TileData;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.TileInformation;
 
@@ -34,6 +44,8 @@ public class BlockPanel extends JPanel
 		this.blocks = blocks.clone();
 		this.tileInformation = tileInformation;
 		this.palette = palette;
+
+		new DropTarget(this, new InternalDropTarget());
 
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
@@ -104,8 +116,92 @@ public class BlockPanel extends JPanel
 		repaint();
 	}
 
+	private class InternalDropTarget implements DropTargetListener
+	{
+		@Override
+		public void dragEnter(final DropTargetDragEvent dtde)
+		{
+		}
+
+		@Override
+		public void dragExit(final DropTargetEvent dte)
+		{
+		}
+
+		@Override
+		public void dragOver(final DropTargetDragEvent dtde)
+		{
+		}
+
+		@Override
+		public void drop(final DropTargetDropEvent dtde)
+		{
+			final Transferable t = dtde.getTransferable();
+
+			if (t.isDataFlavorSupported(TileTransferable.TILE_FLAVOR))
+			{
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+
+	            try
+				{
+					final TileData s = (TileData)t.getTransferData(TileTransferable.TILE_FLAVOR);
+
+					final int row = dtde.getLocation().y / BLOCK_SIZE;
+					final int col = dtde.getLocation().x / BLOCK_SIZE;
+
+					final int subrow = dtde.getLocation().y % BLOCK_SIZE / (BLOCK_SIZE / 2);
+					final int subcol = dtde.getLocation().x % BLOCK_SIZE / (BLOCK_SIZE / 2);
+
+					if (subrow == 0 && subcol == 0)
+					{
+						blocks[row * BLOCK_PER_ROW + col].setTile1(s.getIndex() + tileInformation.getStartLocation());
+					}
+					else if (subrow == 0 && subcol == 1)
+					{
+						blocks[row * BLOCK_PER_ROW + col].setTile2(s.getIndex() + tileInformation.getStartLocation());
+					}
+					else if (subrow == 1 && subcol == 0)
+					{
+						blocks[row * BLOCK_PER_ROW + col].setTile3(s.getIndex() + tileInformation.getStartLocation());
+					}
+					else if (subrow == 1 && subcol == 1)
+					{
+						blocks[row * BLOCK_PER_ROW + col].setTile4(s.getIndex() + tileInformation.getStartLocation());
+					}
+
+
+					dtde.getDropTargetContext().dropComplete(true);
+				}
+				catch (final UnsupportedFlavorException e)
+				{
+					e.printStackTrace();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				dtde.rejectDrop();
+			}
+		}
+
+		@Override
+		public void dropActionChanged(final DropTargetDragEvent dtde)
+		{
+		}
+	}
+
 	private class InternalMouseListener extends MouseAdapter
 	{
+	    private void showPopupMenu(final MouseEvent event, final Block block)
+		{
+	    	final BlockPanelPopupMenu menu = new BlockPanelPopupMenu(block, tileInformation, palette);
+
+	    	menu.show(BlockPanel.this, event.getX(), event.getY());
+		}
+
 	    @Override
 		public void mouseExited(final MouseEvent e)
 	    {
@@ -147,19 +243,38 @@ public class BlockPanel extends JPanel
 	    	repaint();
 	    }
 
-	    @Override
-	    public void mouseReleased(final MouseEvent e)
+    	@Override
+	    public void mousePressed(final MouseEvent e)
 	    {
+	    	if (e.isPopupTrigger())
+	    	{
+		    	final int mouseRow = e.getY() / BLOCK_SIZE;
+		    	final int mouseCol = e.getX() / BLOCK_SIZE;
+
+		    	final Block block = blocks[mouseRow * BLOCK_PER_ROW + mouseCol];
+
+	    		showPopupMenu(e, block);
+	    	}
+	    }
+
+		@Override
+    	public void mouseReleased(final MouseEvent e)
+    	{
 	    	final int mouseRow = e.getY() / BLOCK_SIZE;
 	    	final int mouseCol = e.getX() / BLOCK_SIZE;
 
 	    	final Block block = blocks[mouseRow * BLOCK_PER_ROW + mouseCol];
 
+	    	if (e.isPopupTrigger())
+	    	{
+	    		showPopupMenu(e, block);
+	    	}
+
 	    	for (final IBlockPanelListener listener : listeners)
 	    	{
 	    		try
 	    		{
-	    			listener.clickedBlock(block);
+	    			listener.clickedBlock(e, block);
 	    		}
 	    		catch(final Exception exception)
 	    		{

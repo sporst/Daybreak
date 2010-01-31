@@ -4,8 +4,13 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.TransferHandler;
 
 import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.romfile.TileData;
@@ -22,13 +27,25 @@ public class TilePanel extends JPanel
 	private int tileIndex3 = -1;
 	private int tileIndex4 = -1;
 
+	private final TileDragProvider tileDragProvider = new TileDragProvider();
+
+	private final TransferHandler tileTransferHandler = new TileTransferHandler(tileDragProvider);
+
+	private final MouseListener internalMouseListener = new InternalMouseListener();
+
 	private static final int TILE_WIDTH = 16;
+
 	private static final int TILE_PER_LINE = 32;
+
+	private TileData clickedTile = null;
 
 	public TilePanel(final TileInformation information, final Palette palette)
 	{
 		this.information = information;
 		this.palette = palette;
+
+		setTransferHandler(tileTransferHandler);
+		addMouseListener(internalMouseListener );
 
 		setPreferredSize(new Dimension(TILE_PER_LINE * TILE_WIDTH, information.getTileData().size() / TILE_PER_LINE * TILE_WIDTH));
 	}
@@ -99,5 +116,30 @@ public class TilePanel extends JPanel
 		this.palette = palette;
 
 		repaint();
+	}
+
+	private class InternalMouseListener extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(final MouseEvent e)
+		{
+			final int row = e.getY() / TILE_WIDTH;
+			final int col = e.getX() / TILE_WIDTH;
+
+			clickedTile = information.getTileData().get(row * TILE_PER_LINE + col);
+
+			final JComponent c = (JComponent) e.getSource();
+			final TransferHandler handler = c.getTransferHandler();
+			handler.exportAsDrag(c, e, TransferHandler.COPY);
+		}
+	}
+
+	private class TileDragProvider implements IDragTileProvider
+	{
+		@Override
+		public TileData getTile()
+		{
+			return clickedTile;
+		}
 	}
 }

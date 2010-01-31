@@ -1,11 +1,12 @@
 package tv.porst.daybreak.model;
 
+
 public final class Block
 {
-	private final int t1;
-	private final int t2;
-	private final int t3;
-	private final int t4;
+	private int t1;
+	private int t2;
+	private int t3;
+	private int t4;
 	private final BlockAttribute attribute;
 	private final int index;
 
@@ -47,6 +48,26 @@ public final class Block
 	public int getTile4()
 	{
 		return t4;
+	}
+
+	public void setTile1(final int id)
+	{
+		t1 = id;
+	}
+
+	public void setTile2(final int id)
+	{
+		t2 = id;
+	}
+
+	public void setTile3(final int id)
+	{
+		t3 = id;
+	}
+
+	public void setTile4(final int id)
+	{
+		t4 = id;
 	}
 
 	@Override

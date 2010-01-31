@@ -7,9 +7,11 @@ public final class Block
 	private final int t3;
 	private final int t4;
 	private final BlockAttribute attribute;
+	private final int index;
 
-	public Block(final BlockAttribute attribute, final int t1, final int t2, final int t3, final int t4)
+	public Block(final int index, final BlockAttribute attribute, final int t1, final int t2, final int t3, final int t4)
 	{
+		this.index = index;
 		this.attribute = attribute;
 		this.t1 = t1;
 		this.t2 = t2;
@@ -20,6 +22,11 @@ public final class Block
 	public BlockAttribute getAttribute()
 	{
 		return attribute;
+	}
+
+	public int getIndex()
+	{
+		return index;
 	}
 
 	public int getTile1()

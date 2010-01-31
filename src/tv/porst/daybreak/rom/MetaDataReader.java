@@ -104,7 +104,7 @@ public class MetaDataReader
 			final int tile3 = data[baseOffset + tsa3 + i] & 0xFF;
 			final int tile4 = data[baseOffset + tsa4 + i] & 0xFF;
 
-			blocks[i] = new Block(attributes[i], tile1, tile2, tile3, tile4);
+			blocks[i] = new Block(i, attributes[i], tile1, tile2, tile3, tile4);
 		}
 
 		return blocks;

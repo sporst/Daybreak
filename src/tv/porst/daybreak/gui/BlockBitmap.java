@@ -23,10 +23,12 @@ public class BlockBitmap extends BufferedImage
 
 		final IFilledList<TileData> tileData = tileInformation.getTileData();
 
-		final int tileIndex1 = block.getTile1() - tileInformation.getStartLocation();
-		final int tileIndex2 = block.getTile2() - tileInformation.getStartLocation();
-		final int tileIndex3 = block.getTile3() - tileInformation.getStartLocation();
-		final int tileIndex4 = block.getTile4() - tileInformation.getStartLocation();
+		final int start = tileInformation.getStartLocation();
+
+		final int tileIndex1 = block.getTile1() - start;
+		final int tileIndex2 = block.getTile2() - start;
+		final int tileIndex3 = block.getTile3() - start;
+		final int tileIndex4 = block.getTile4() - start;
 
 		final TileBitmap upperLeft = block.getTile1() == 0 ? DEFAULT_TILE : new TileBitmap(tileData.get(tileIndex1), attribute.topLeft(), palette);
 		final TileBitmap upperRight = block.getTile2() == 0 ? DEFAULT_TILE : new TileBitmap(tileData.get(tileIndex2), attribute.topRight(), palette);

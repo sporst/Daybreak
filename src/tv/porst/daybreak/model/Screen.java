@@ -1,5 +1,8 @@
 package tv.porst.daybreak.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
 
@@ -10,10 +13,12 @@ public final class Screen
 	private final Palette palette;
 
 	private final ListenerProvider<IScreenListener> listeners = new ListenerProvider<IScreenListener>();
+	private final List<SpriteLocation> spriteData;
 
-	public Screen(final int[][] squareNumbers, final TileInformation tiles, final Palette palette)
+	public Screen(final int[][] squareNumbers, final List<SpriteLocation> spriteData, final TileInformation tiles, final Palette palette)
 	{
 		this.squareNumbers = squareNumbers.clone();
+		this.spriteData = new ArrayList<SpriteLocation>(spriteData);
 		this.tiles = tiles;
 		this.palette = palette;
 	}
@@ -26,6 +31,11 @@ public final class Screen
 	public Palette getPalette()
 	{
 		return palette;
+	}
+
+	public List<SpriteLocation> getSpriteData()
+	{
+		return new ArrayList<SpriteLocation>(spriteData);
 	}
 
 	public int[][] getSquareNumbers()

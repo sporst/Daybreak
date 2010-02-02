@@ -4,10 +4,12 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
+import java.util.List;
 
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.MetaData;
 import tv.porst.daybreak.model.Screen;
+import tv.porst.daybreak.model.SpriteLocation;
 
 public class ScreenBitmap extends BufferedImage
 {
@@ -21,6 +23,7 @@ public class ScreenBitmap extends BufferedImage
 
 		final int[][] squareNumbers = screen.getSquareNumbers();
 		final Block[] blocks = metaData.getBlocks();
+		final List<SpriteLocation> sprites = screen.getSpriteData();
 
 		final Graphics g = getGraphics();
 
@@ -61,6 +64,15 @@ public class ScreenBitmap extends BufferedImage
 					g.drawRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH - 1, TILE_WIDTH - 1);
 				}
 			}
+		}
+
+		for (final SpriteLocation spriteLocation : sprites)
+		{
+			final int x = spriteLocation.getX();
+			final int y = spriteLocation.getY();
+
+			g.setColor(Color.YELLOW);
+			g.fillRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 		}
 	}
 }

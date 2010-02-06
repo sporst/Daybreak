@@ -194,15 +194,16 @@ public final class LevelDataReader
 		{
 			if (levelId == 2)
 			{
-				final Level level = levels.get(6);
-
 				destination -= 0x20;
-
-				final int destinationPointer = 4 * destination;
-				final Screen screen = level.getScreens().get(doorDestinations[destinationPointer + 1]);
-
-				screen.setPalette(palettes.get(new int[] { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A }[doorDestinations[destinationPointer + 1]]));
 			}
+
+			final Level level = levels.get(6);
+
+
+			final int destinationPointer = 4 * destination;
+			final Screen screen = level.getScreens().get(doorDestinations[destinationPointer + 1]);
+
+			screen.setPalette(palettes.get(new int[] { 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19, 0x1A }[doorDestinations[destinationPointer + 1]]));
 
 			return null;
 		}
@@ -297,7 +298,7 @@ public final class LevelDataReader
 
 			for (final int pointer2 : screenPointers)
 			{
-				final TileInformation tiles = getTileInformation(levelId, screens.size(), tileInformation);
+				final TileInformation tiles = getTileInformation(levelId + levels.size(), screens.size(), tileInformation);
 
 				final List<SpriteLocation> spriteData = readSpriteData(data, levelId, screens.size());
 

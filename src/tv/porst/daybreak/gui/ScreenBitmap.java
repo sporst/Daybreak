@@ -71,7 +71,7 @@ public class ScreenBitmap extends BufferedImage
 			final int x = spriteLocation.getX();
 			final int y = spriteLocation.getY();
 
-			g.setColor(Color.YELLOW);
+			g.setColor(Color.GREEN);
 			g.fillRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH);
 		}
 	}

@@ -7,7 +7,7 @@ public class GameDataReader
 {
 	public static GameData read(final byte[] data)
 	{
-		final byte[] nlvl_table = ArrayHelpers.copy(data, 0x3E5F7, 12);
+		final byte[] nlvl_table = ArrayHelpers.copy(data, 0x3E5F7, 15);
 
 		return new GameData(nlvl_table);
 	}

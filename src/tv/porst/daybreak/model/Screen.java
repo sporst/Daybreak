@@ -10,17 +10,17 @@ public final class Screen
 {
 	private final int[][] squareNumbers;
 	private final TileInformation tiles;
-	private final Palette palette;
+
+	private Palette palette;
 
 	private final ListenerProvider<IScreenListener> listeners = new ListenerProvider<IScreenListener>();
 	private final List<SpriteLocation> spriteData;
 
-	public Screen(final int[][] squareNumbers, final List<SpriteLocation> spriteData, final TileInformation tiles, final Palette palette)
+	public Screen(final int[][] squareNumbers, final List<SpriteLocation> spriteData, final TileInformation tiles)
 	{
 		this.squareNumbers = squareNumbers.clone();
 		this.spriteData = new ArrayList<SpriteLocation>(spriteData);
 		this.tiles = tiles;
-		this.palette = palette;
 	}
 
 	public void addListener(final IScreenListener listener)
@@ -73,5 +73,10 @@ public final class Screen
 				exception.printStackTrace();
 			}
 		}
+	}
+
+	public void setPalette(final Palette palette)
+	{
+		this.palette = palette;
 	}
 }

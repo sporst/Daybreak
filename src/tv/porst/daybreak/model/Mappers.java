@@ -4,6 +4,36 @@ public class Mappers
 {
 	public static int[] HOUSE_TILE_INDICES = {6,6,6,7,7,7,7,7,8,8};
 
+	public static int chunkToLevel(final int chunk)
+	{
+		if (chunk == 2)
+		{
+			return 1;
+		}
+		else if (chunk == 3)
+		{
+			return 2;
+		}
+		else if (chunk == 1)
+		{
+			return 3;
+		}
+		else if (chunk == 5)
+		{
+			return 4;
+		}
+		else if (chunk == 6)
+		{
+			return 5;
+		}
+		else if (chunk == 4)
+		{
+			return 6;
+		}
+
+		return chunk;
+	}
+
 	public static int levelToTiles(final int levelIndex)
 	{
 		switch(levelIndex)

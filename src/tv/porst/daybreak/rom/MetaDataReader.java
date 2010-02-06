@@ -13,7 +13,7 @@ import tv.porst.daybreak.model.MetaData;
 
 public class MetaDataReader
 {
-	private static List<byte[]> readAdditionalScrollingData(final byte[] data, final int offset, final int levelId)
+	private static byte[] readAdditionalScrollingData(final byte[] data, final int offset, final int levelId)
 	{
 		final int[] pointers = PointerReader.readPointers(data, offset, 8);
 
@@ -33,10 +33,17 @@ public class MetaDataReader
 			scrollingData.add(ArrayHelpers.copy(data, baseOffset+ i, 5));
 		}
 
-		return scrollingData;
+		final byte[] array = new byte[5 * scrollingData.size()];
+
+		for (int i=0;i<scrollingData.size();i++)
+		{
+			System.arraycopy(scrollingData.get(i), 0, array, 5 * i, 5);
+		}
+
+		return array;
 	}
 
-	private static List<byte[]> readAdditionalScrollingData2(final byte[] data, final int offset, final int levelId)
+	private static byte[] readAdditionalScrollingData2(final byte[] data, final int offset, final int levelId)
 	{
 		final int[] pointers = PointerReader.readPointers(data, offset, 8);
 
@@ -56,7 +63,14 @@ public class MetaDataReader
 			scrollingData.add(ArrayHelpers.copy(data, baseOffset+ i, 4));
 		}
 
-		return scrollingData;
+		final byte[] array = new byte[4 * scrollingData.size()];
+
+		for (int i=0;i<scrollingData.size();i++)
+		{
+			System.arraycopy(scrollingData.get(i), 0, array, 4 * i, 4);
+		}
+
+		return array;
 	}
 
 	private static BlockAttribute[] readAttributes(final byte[] data, final int offset, final int tiles)
@@ -73,7 +87,7 @@ public class MetaDataReader
 
 	private static byte[] readDoorDestinations(final byte[] data, final int offset, final int doors)
 	{
-		return ArrayHelpers.copy(data, offset, 0x10 * doors);
+		return ArrayHelpers.copy(data, offset, 4 * doors);
 	}
 
 	private static byte[] readDoorLocations(final byte[] data, final int offset, final int doors)
@@ -133,9 +147,9 @@ public class MetaDataReader
 
 		final Block[] blocks = readTsaData(data, baseOffset, metaPointers[6], metaPointers[7], metaPointers[8], metaPointers[9], attributes);
 
-		final List<byte[]> scrollingData = readAdditionalScrollingData(data, 0x3EAAC, levelId);
-		final List<byte[]> scrollingData2 = readAdditionalScrollingData2(data, 0x3EA47, levelId);
+		final byte[] scrollingData = readAdditionalScrollingData(data, 0x3EAAC, levelId);
+		final byte[] scrollingData2 = readAdditionalScrollingData2(data, 0x3EA47, levelId);
 
-		return new MetaData(properties, blocks);
+		return new MetaData(properties, blocks, scrollData, doorLocations, doorDestinations, scrollingData, scrollingData2);
 	}
 }

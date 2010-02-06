@@ -19,7 +19,7 @@ import tv.porst.daybreak.model.Screen;
 
 public class ScreenSelectionPanel extends JPanel
 {
-	private final LevelBox levelBox = new LevelBox();
+	private final LevelBox levelBox;
 
 	private final List<Level> levels;
 
@@ -34,6 +34,8 @@ public class ScreenSelectionPanel extends JPanel
 		this.levels = new ArrayList<Level>(levels);
 
 		setBorder(new TitledBorder("Level"));
+
+		levelBox = new LevelBox(levels);
 
 		levelBox.addItemListener(new InternalItemListener());
 
@@ -84,7 +86,9 @@ public class ScreenSelectionPanel extends JPanel
 		@Override
 		public void itemStateChanged(final ItemEvent e)
 		{
-			screenSelectionList.getModel().setLevel(levels.get(levelBox.getSelectedIndex()));
+			final Level level = ((LevelItem) levelBox.getSelectedItem()).getLevel();
+
+			screenSelectionList.getModel().setLevel(level);
 
 			if (screenSelectionList.getSelectedIndex() == 0)
 			{

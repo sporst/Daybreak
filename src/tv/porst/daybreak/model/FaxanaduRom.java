@@ -29,7 +29,7 @@ public final class FaxanaduRom
 
 		final List<Palette> palettes = PaletteReader.read(data);
 
-		final List<Level> levels = LevelDataReader.readLevelData(data, tileInformation, palettes);
+		final List<Level> levels = LevelDataReader.readLevelData(data, tileInformation, palettes, gameData);
 
 		return new FaxanaduRom(levels, tileInformation, palettes);
 	}

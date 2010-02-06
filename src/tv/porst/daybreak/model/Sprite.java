@@ -31,6 +31,6 @@ public class Sprite
 
 	public int width()
 	{
-		return tiles[0].length;
+		return height() == 0 ? 0 : tiles[0].length;
 	}
 }

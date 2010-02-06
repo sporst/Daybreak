@@ -19,7 +19,7 @@ public class SpriteBitmap extends BufferedImage
 		{
 			for (int j=0;j<tiles[i].length;j++)
 			{
-				final TileBitmap bitmap = new TileBitmap(tiles[i][j], 3, sprite.getPalette());
+				final TileBitmap bitmap = new TileBitmap(tiles[i][j], 2, sprite.getPalette());
 
 				getGraphics().drawImage(bitmap, j * TILE_WIDTH, i * TILE_WIDTH, TILE_WIDTH, TILE_WIDTH, null);
 			}

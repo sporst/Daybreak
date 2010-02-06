@@ -48,6 +48,11 @@ public class SpriteSelectionList extends JList
 
 	private Image getNormalizedImage(final Sprite sprite)
 	{
+		if (sprite.height() == 0 && sprite.width() == 0)
+		{
+			return new BufferedImage(16, 16, BufferedImage.TYPE_3BYTE_BGR);
+		}
+
 		final SpriteBitmap bitmap = new SpriteBitmap(sprite);
 
 		if (sprite.height() > sprite.width())
@@ -71,7 +76,7 @@ public class SpriteSelectionList extends JList
 		}
 		else
 		{
-			return null;
+			return new BufferedImage(16, 16, BufferedImage.TYPE_3BYTE_BGR);
 		}
 	}
 

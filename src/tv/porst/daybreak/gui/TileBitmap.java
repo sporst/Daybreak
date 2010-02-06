@@ -12,6 +12,11 @@ public class TileBitmap extends BufferedImage
 	{
 		super(8, 8, TYPE_3BYTE_BGR);
 
+		if (data == null)
+		{
+			System.out.println("oh2");
+		}
+
 		final byte[] d = data.getData();
 		final int[] bitmap = new int[3 * 8 * 8];
 

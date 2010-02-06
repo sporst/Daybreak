@@ -31,7 +31,6 @@ public class ScreenSelectionList extends JList
 		{
 			screen.addListener(internalScreenListener);
 		}
-
 	}
 
 	private ImageIcon getImage(final int index)

@@ -13,6 +13,7 @@ import net.sourceforge.jnhf.romfile.InvalidRomException;
 import tv.porst.daybreak.rom.GameDataReader;
 import tv.porst.daybreak.rom.LevelDataReader;
 import tv.porst.daybreak.rom.PaletteReader;
+import tv.porst.daybreak.rom.SpriteReader;
 import tv.porst.daybreak.rom.TilesReader;
 
 public final class FaxanaduRom
@@ -31,7 +32,9 @@ public final class FaxanaduRom
 
 		final List<Level> levels = LevelDataReader.readLevelData(data, tileInformation, palettes, gameData);
 
-		return new FaxanaduRom(levels, tileInformation, palettes);
+		final List<Sprite> sprites = SpriteReader.read(data, palettes.get(0));
+
+		return new FaxanaduRom(levels, tileInformation, palettes, sprites);
 	}
 
 	private final ArrayList<Level> levels;
@@ -40,11 +43,14 @@ public final class FaxanaduRom
 
 	private final List<Palette> palettes;
 
-	private FaxanaduRom(final List<Level> levels, final List<TileInformation> tileInformation, final List<Palette> palettes)
+	private final List<Sprite> sprites;
+
+	private FaxanaduRom(final List<Level> levels, final List<TileInformation> tileInformation, final List<Palette> palettes, final List<Sprite> sprites)
 	{
 		this.levels = new ArrayList<Level>(levels);
 		this.tileInformation = new ArrayList<TileInformation>(tileInformation);
 		this.palettes = new ArrayList<Palette>(palettes);
+		this.sprites = sprites;
 	}
 
 	public List<Level> getLevels()
@@ -55,6 +61,11 @@ public final class FaxanaduRom
 	public List<Palette> getPalettes()
 	{
 		return new ArrayList<Palette>(palettes);
+	}
+
+	public List<Sprite> getSprites()
+	{
+		return sprites;
 	}
 
 	public List<TileInformation> getTileInformation()

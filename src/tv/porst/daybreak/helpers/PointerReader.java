@@ -4,6 +4,11 @@ import net.sourceforge.jnhf.helpers.ByteHelpers;
 
 public class PointerReader
 {
+	public static int readPointer(final byte[] data, final int start)
+	{
+		return ByteHelpers.readWordLittleEndian(data, start);
+	}
+
 	public static int[] readPointers(final byte[] data, final int start, final int count)
 	{
 		final int[] pointers = new int[count];

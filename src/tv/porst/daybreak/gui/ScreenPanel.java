@@ -18,13 +18,18 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.io.IOException;
+import java.util.List;
 
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
+import tv.porst.daybreak.gui.sprites.IDragSpriteProvider;
 import tv.porst.daybreak.gui.sprites.SpriteBitmap;
+import tv.porst.daybreak.gui.sprites.SpriteTransferHandler;
 import tv.porst.daybreak.gui.sprites.SpriteTransferable;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.Level;
@@ -55,6 +60,10 @@ public class ScreenPanel extends JPanel
 
 	private Sprite draggedSprite = null;
 
+	private final SpriteDragProvider spriteDragProvider = new SpriteDragProvider();
+
+	private final TransferHandler spriteTransferHandler = new SpriteTransferHandler(spriteDragProvider);
+
 	public ScreenPanel(final Level level, final Screen screen)
 	{
 		this.level = level;
@@ -65,9 +74,32 @@ public class ScreenPanel extends JPanel
 
 		new DropTarget(this, new InternalDropTarget());
 
+		setTransferHandler(spriteTransferHandler);
+
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
 		addMouseWheelListener(internalMouseListener);
+	}
+
+	private Sprite getSprite(final int col, final int row)
+	{
+		final List<SpriteLocation> spriteData = screen.getSpriteData();
+
+		for (int i=spriteData.size()-1;i>=0;i--)
+		{
+			final SpriteLocation sprite = spriteData.get(i);
+
+			if (
+					col >= sprite.getX() && col < sprite.getX() + sprite.getSprite().width() / 2 &&
+					row >= sprite.getY() && row < sprite.getY() + sprite.getSprite().height() / 2)
+			{
+				screen.removeSprite(sprite);
+
+				return sprite.getSprite();
+			}
+		}
+
+		return null;
 	}
 
 	public void addListener(final IScreenPanelListener listener)
@@ -307,6 +339,18 @@ public class ScreenPanel extends JPanel
 				showPopupMenu(event, block);
 			}
 
+			if (SwingUtilities.isLeftMouseButton(event))
+			{
+				draggedSprite = getSprite(mouseCol, mouseRow);
+
+				if (draggedSprite != null)
+				{
+					final JComponent c = (JComponent) event.getSource();
+					final TransferHandler handler = c.getTransferHandler();
+					handler.exportAsDrag(c, event, TransferHandler.COPY);
+				}
+			}
+
 			repaint();
 		}
 
@@ -348,5 +392,14 @@ public class ScreenPanel extends JPanel
 
 	    	setScreen(level, level.getScreens().get(scrolledIndex));
 	    }
+	}
+
+	private class SpriteDragProvider implements IDragSpriteProvider
+	{
+		@Override
+		public Sprite getSprite()
+		{
+			return draggedSprite;
+		}
 	}
 }

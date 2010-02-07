@@ -70,6 +70,23 @@ public final class Screen
 		listeners.removeListener(listener);
 	}
 
+	public void removeSprite(final SpriteLocation sprite)
+	{
+		spriteData.remove(sprite);
+
+		for (final IScreenListener listener : listeners)
+		{
+			try
+			{
+				listener.removeSprite(this, sprite);
+			}
+			catch(final Exception exception)
+			{
+				exception.printStackTrace();
+			}
+		}
+	}
+
 	public void setBlock(final int x, final int y, final Block block)
 	{
 		if (squareNumbers[y][x] == block.getIndex())

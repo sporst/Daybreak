@@ -122,6 +122,14 @@ public class ScreenSelectionList extends JList
 
 			repaint();
 		}
+
+		@Override
+		public void removeSprite(final Screen screen, final SpriteLocation sprite)
+		{
+			images.remove(screen);
+
+			repaint();
+		}
 	}
 
 	private class ScreenRenderer extends DefaultListCellRenderer

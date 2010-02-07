@@ -64,5 +64,11 @@ public class ScreenSelectionListModel extends AbstractListModel
 		{
 			fireContentsChanged(this, 0, getSize());
 		}
+
+		@Override
+		public void removeSprite(final Screen screen, final SpriteLocation sprite)
+		{
+			fireContentsChanged(this, 0, getSize());
+		}
 	}
 }

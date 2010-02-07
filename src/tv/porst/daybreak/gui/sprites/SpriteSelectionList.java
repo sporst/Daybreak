@@ -1,8 +1,10 @@
 package tv.porst.daybreak.gui.sprites;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -137,7 +139,25 @@ public class SpriteSelectionList extends JList
 		{
 			final Component c = super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
 
-			((JLabel) c).setIcon(getImage(index));
+			final ImageIcon icon = getImage(index);
+
+			if (isSelected)
+			{
+				final ImageIcon clonedIcon = new ImageIcon(ImageHelpers.copy((BufferedImage) icon.getImage()));
+
+				final Graphics2D g = (Graphics2D) clonedIcon.getImage().getGraphics();
+
+				g.setColor(Color.RED);
+				g.setStroke(new BasicStroke(5));
+				g.drawRect(0, 0, clonedIcon.getIconWidth() - 1, clonedIcon.getIconHeight() - 1);
+
+				((JLabel) c).setIcon(clonedIcon);
+			}
+			else
+			{
+				((JLabel) c).setIcon(icon);
+			}
+
 			((JLabel) c).setText("");
 
 			return c;

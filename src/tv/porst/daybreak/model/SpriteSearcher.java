@@ -24,8 +24,12 @@ public class SpriteSearcher
 	{
 		final List<Pair<Level, Screen>> screens = new ArrayList<Pair<Level, Screen>>();
 
-		for (final Level level : rom.getLevels())
+		final List<Level> levels = rom.getLevels();
+
+		for (int i=0;i<levels.size();i++)
 		{
+			final Level level = levels.get(Mappers.chunkToLevel(i));
+
 			for (final Screen screen : level.getScreens())
 			{
 				if (hasSprite(screen, sprite))

@@ -17,8 +17,13 @@ import javax.swing.JList;
 import javax.swing.TransferHandler;
 
 import net.sourceforge.jnhf.helpers.ImageHelpers;
+import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.FaxanaduRom;
+import tv.porst.daybreak.model.IScreenListener;
+import tv.porst.daybreak.model.Level;
+import tv.porst.daybreak.model.Screen;
 import tv.porst.daybreak.model.Sprite;
+import tv.porst.daybreak.model.SpriteLocation;
 import tv.porst.daybreak.model.SpriteSearcher;
 
 public class SpriteSelectionList extends JList
@@ -31,11 +36,21 @@ public class SpriteSelectionList extends JList
 
 	private final TransferHandler spriteTransferHandler = new SpriteTransferHandler(spriteDragProvider);
 
+	private final IScreenListener internalScreenListener = new InternalScreenListener();
+
 	public SpriteSelectionList(final FaxanaduRom rom)
 	{
 		super(new SpriteSelectionListModel(rom));
 
 		this.rom = rom;
+
+		for (final Level level : rom.getLevels())
+		{
+			for (final Screen screen : level.getScreens())
+			{
+				screen.addListener(internalScreenListener );
+			}
+		}
 
 		setDragEnabled(true);
 		setTransferHandler(spriteTransferHandler);
@@ -121,6 +136,30 @@ public class SpriteSelectionList extends JList
 	public SpriteSelectionListModel getModel()
 	{
 		return (SpriteSelectionListModel) super.getModel();
+	}
+
+	private class InternalScreenListener implements IScreenListener
+	{
+		@Override
+		public void addedSprite(final Screen screen, final SpriteLocation spriteLocation)
+		{
+			images.remove(spriteLocation.getSprite());
+
+			repaint();
+		}
+
+		@Override
+		public void changedBlock(final Screen screen, final int x, final int y, final Block block)
+		{
+		}
+
+		@Override
+		public void removeSprite(final Screen screen, final SpriteLocation sprite)
+		{
+			images.remove(sprite.getSprite());
+
+			repaint();
+		}
 	}
 
 	private class SpriteDragProvider implements IDragSpriteProvider

@@ -3,7 +3,7 @@ package tv.porst.daybreak.model;
 
 public final class MetaData
 {
-	private final byte[] properties;
+	private final BlockProperty[] properties;
 	private final Block[] blocks;
 	private final byte[] doorLocations;
 	private final byte[] scrollData;
@@ -11,7 +11,7 @@ public final class MetaData
 	private final byte[] additionalScrollingData;
 	private final byte[] additionalScrollingData2;
 
-	public MetaData(final byte[] properties, final Block[] blocks, final byte[] scrollData, final byte[] doorLocations, final byte[] doorDestinations, final byte[] additionalScrollingData, final byte[] additionalScrollingData2)
+	public MetaData(final BlockProperty[] properties, final Block[] blocks, final byte[] scrollData, final byte[] doorLocations, final byte[] doorDestinations, final byte[] additionalScrollingData, final byte[] additionalScrollingData2)
 	{
 		this.properties = properties.clone();
 		this.blocks = blocks.clone();

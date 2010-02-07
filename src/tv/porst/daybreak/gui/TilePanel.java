@@ -74,7 +74,7 @@ public class TilePanel extends JPanel
 
 		for (final TileData data : information.getTileData())
 		{
-			final TileBitmap bitmap = new TileBitmap(data, 0, palette);
+			final TileBitmap bitmap = new TileBitmap(data, 0, palette, false);
 
 			final int line = counter / TILE_PER_LINE;
 			final int column = counter % TILE_PER_LINE;

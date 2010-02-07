@@ -39,6 +39,11 @@ public class SpriteSelectionList extends JList
 			return images.get(sprite);
 		}
 
+//		if (sprite == null)
+//		{
+//			return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_3BYTE_BGR));
+//		}
+
 		final ImageIcon image = new ImageIcon(getNormalizedImage(sprite));
 
 		images.put(sprite, image);
@@ -55,7 +60,7 @@ public class SpriteSelectionList extends JList
 
 		final SpriteBitmap bitmap = new SpriteBitmap(sprite);
 
-		if (sprite.height() > sprite.width())
+		if (sprite.height() >= sprite.width())
 		{
 			final int NEW_HEIGHT = 64;
 

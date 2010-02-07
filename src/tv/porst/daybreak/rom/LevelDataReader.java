@@ -14,6 +14,7 @@ import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.Mappers;
 import tv.porst.daybreak.model.MetaData;
 import tv.porst.daybreak.model.Screen;
+import tv.porst.daybreak.model.Sprite;
 import tv.porst.daybreak.model.SpriteLocation;
 import tv.porst.daybreak.model.TileInformation;
 
@@ -284,7 +285,7 @@ public final class LevelDataReader
 		return squareNumbers;
 	}
 
-	private static List<Level> readScreenData(final byte[] data, final int bank, final int levelId, final List<TileInformation> tileInformation)
+	private static List<Level> readScreenData(final byte[] data, final int bank, final int levelId, final List<TileInformation> tileInformation, final List<Sprite> sprites)
 	{
 		final List<Level> levels = new ArrayList<Level>();
 
@@ -300,7 +301,7 @@ public final class LevelDataReader
 			{
 				final TileInformation tiles = getTileInformation(levelId + levels.size(), screens.size(), tileInformation);
 
-				final List<SpriteLocation> spriteData = readSpriteData(data, levelId, screens.size());
+				final List<SpriteLocation> spriteData = readSpriteData(data, levelId + levels.size(), screens.size(), sprites);
 
 				final int[][] squareNumbers = readScreen(data, INesHeader.NES_HEADER_SIZE + bank * 0x4000 + pointer2);
 
@@ -317,7 +318,7 @@ public final class LevelDataReader
 		return levels;
 	}
 
-	private static List<SpriteLocation> readSpriteData(final byte[] data, final int levelId, final int screenId)
+	private static List<SpriteLocation> readSpriteData(final byte[] data, final int levelId, final int screenId, final List<Sprite> spritess)
 	{
 		final int bankOffset = 0x2C010;
 		final int startOffset = 0x2C220;
@@ -375,23 +376,25 @@ public final class LevelDataReader
 
 		for (int i=0;i<spriteIds.size();i++)
 		{
-			final byte spriteId = spriteIds.get(i);
+			final int spriteId = spriteIds.get(i) & 0xFF;
+
+			final Sprite sprite = spriteId < spritess.size() ? spritess.get(spriteId) : null;
 			final byte spriteLocation = spriteLocations.get(i);
 			final byte spriteMessage = i < messageIds.size() ? messageIds.get(0) : -1;
 
-			sprites.add(new SpriteLocation(spriteId, spriteLocation, spriteMessage));
+			sprites.add(new SpriteLocation(sprite, spriteLocation, spriteMessage));
 		}
 
 		return sprites;
 	}
 
-	public static List<Level> readLevelData(final byte[] data, final List<TileInformation> tileInformation, final List<Palette> palettes, final GameData gameData)
+	public static List<Level> readLevelData(final byte[] data, final List<TileInformation> tileInformation, final List<Palette> palettes, final GameData gameData, final List<Sprite> sprites)
 	{
 		final List<Level> screens = new ArrayList<Level>();
 
-		screens.addAll(readScreenData(data, 0, 0, tileInformation));
-		screens.addAll(readScreenData(data, 1, screens.size(), tileInformation));
-		screens.addAll(readScreenData(data, 2, screens.size(), tileInformation));
+		screens.addAll(readScreenData(data, 0, 0, tileInformation, sprites));
+		screens.addAll(readScreenData(data, 1, screens.size(), tileInformation, sprites));
+		screens.addAll(readScreenData(data, 2, screens.size(), tileInformation, sprites));
 
 		assignPalettes(screens, palettes, gameData);
 

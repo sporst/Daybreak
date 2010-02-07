@@ -9,11 +9,13 @@ public final class Block
 	private int t4;
 	private final BlockAttribute attribute;
 	private final int index;
+	private final BlockProperty property;
 
-	public Block(final int index, final BlockAttribute attribute, final int t1, final int t2, final int t3, final int t4)
+	public Block(final int index, final BlockProperty property, final BlockAttribute attribute, final int t1, final int t2, final int t3, final int t4)
 	{
 		this.index = index;
 		this.attribute = attribute;
+		this.property = property;
 		this.t1 = t1;
 		this.t2 = t2;
 		this.t3 = t3;
@@ -28,6 +30,11 @@ public final class Block
 	public int getIndex()
 	{
 		return index;
+	}
+
+	public BlockProperty getProperty()
+	{
+		return property;
 	}
 
 	public int getTile1()

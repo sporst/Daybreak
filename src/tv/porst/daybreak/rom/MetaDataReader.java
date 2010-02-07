@@ -8,6 +8,7 @@ import net.sourceforge.jnhf.helpers.ByteHelpers;
 import tv.porst.daybreak.helpers.PointerReader;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.BlockAttribute;
+import tv.porst.daybreak.model.BlockProperty;
 import tv.porst.daybreak.model.Mappers;
 import tv.porst.daybreak.model.MetaData;
 
@@ -95,9 +96,16 @@ public class MetaDataReader
 		return ArrayHelpers.copy(data, offset, doors);
 	}
 
-	private static byte[] readProperties(final byte[] data, final int offset, final int tiles)
+	private static BlockProperty[] readProperties(final byte[] data, final int offset, final int tiles)
 	{
-		return ArrayHelpers.copy(data, offset, tiles);
+		final BlockProperty[] attributes = new BlockProperty[tiles];
+
+		for (int i=0;i<tiles;i++)
+		{
+			attributes[i] = new BlockProperty(data[offset + i]);
+		}
+
+		return attributes;
 	}
 
 	private static byte[] readScrollData(final byte[] data, final int offset, final int screens)
@@ -105,7 +113,7 @@ public class MetaDataReader
 		return ArrayHelpers.copy(data, offset, 4 * screens);
 	}
 
-	private static Block[] readTsaData(final byte[] data, final int baseOffset, final int tsa1, final int tsa2, final int tsa3, final int tsa4, final BlockAttribute[] attributes)
+	private static Block[] readTsaData(final byte[] data, final int baseOffset, final int tsa1, final int tsa2, final int tsa3, final int tsa4, final BlockAttribute[] attributes, final BlockProperty[] properties)
 	{
 		final int tiles = tsa2 - tsa1;
 
@@ -118,7 +126,7 @@ public class MetaDataReader
 			final int tile3 = data[baseOffset + tsa3 + i] & 0xFF;
 			final int tile4 = data[baseOffset + tsa4 + i] & 0xFF;
 
-			blocks[i] = new Block(i, attributes[i], tile1, tile2, tile3, tile4);
+			blocks[i] = new Block(i, properties[i], attributes[i], tile1, tile2, tile3, tile4);
 		}
 
 		return blocks;
@@ -140,12 +148,12 @@ public class MetaDataReader
 		final int attributePointer = ByteHelpers.readWordLittleEndian(data, baseOffset + metaPointers[0]);
 
 		final BlockAttribute[] attributes = readAttributes(data, baseOffset + attributePointer, tiles);
-		final byte[] properties = readProperties(data, baseOffset + metaPointers[1], tiles);
+		final BlockProperty[] properties = readProperties(data, baseOffset + metaPointers[1], tiles);
 		final byte[] scrollData = readScrollData(data, baseOffset + metaPointers[2], screensInLevel);
 		final byte[] doorLocations = readDoorLocations(data, baseOffset + metaPointers[3], doors);
 		final byte[] doorDestinations = readDoorDestinations(data, baseOffset + metaPointers[4], doors);
 
-		final Block[] blocks = readTsaData(data, baseOffset, metaPointers[6], metaPointers[7], metaPointers[8], metaPointers[9], attributes);
+		final Block[] blocks = readTsaData(data, baseOffset, metaPointers[6], metaPointers[7], metaPointers[8], metaPointers[9], attributes, properties);
 
 		final byte[] scrollingData = readAdditionalScrollingData(data, 0x3EAAC, levelId);
 		final byte[] scrollingData2 = readAdditionalScrollingData2(data, 0x3EA47, levelId);

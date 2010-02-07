@@ -7,11 +7,18 @@ public class Sprite
 {
 	private final TileData[][] tiles;
 	private final Palette palette;
+	private final int id;
 
-	public Sprite(final TileData[][] spriteData, final Palette palette)
+	public Sprite(final int id, final TileData[][] spriteData, final Palette palette)
 	{
+		this.id = id;
 		this.tiles = spriteData;
 		this.palette = palette;
+	}
+
+	public int getId()
+	{
+		return id;
 	}
 
 	public Palette getPalette()

@@ -8,6 +8,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
@@ -36,9 +37,11 @@ public class ScreenPanel extends JPanel
 	private final InternalMouseListener internalMouseListener = new InternalMouseListener();
 	private Block highlightedBlock;
 	private Block selectedBlock;
+	private Level level;
 
 	public ScreenPanel(final Level level, final Screen screen)
 	{
+		this.level = level;
 		this.screen = screen;
 		this.metaData = level.getMetaData();
 
@@ -46,6 +49,7 @@ public class ScreenPanel extends JPanel
 
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
+		addMouseWheelListener(internalMouseListener);
 	}
 
 	public void addListener(final IScreenPanelListener listener)
@@ -81,6 +85,7 @@ public class ScreenPanel extends JPanel
 
 	public void setScreen(final Level level, final Screen screen)
 	{
+		this.level = level;
 		this.screen = screen;
 		this.metaData = level.getMetaData();
 
@@ -171,7 +176,7 @@ public class ScreenPanel extends JPanel
 	    	repaint();
 	    }
 
-		@Override
+	    @Override
 		public void mousePressed(final MouseEvent event)
 		{
 			mouseCol = event.getX() / TILE_WIDTH;
@@ -209,6 +214,21 @@ public class ScreenPanel extends JPanel
 			}
 
 	    	repaint();
+	    }
+
+		@Override
+		public void mouseWheelMoved(final MouseWheelEvent e)
+	    {
+	    	final int currentIndex = level.getScreens().indexOf(screen);
+
+	    	final int scrolledIndex = currentIndex + e.getWheelRotation();
+
+	    	if (scrolledIndex < 0 || scrolledIndex >= level.getScreens().size())
+			{
+				return;
+			}
+
+	    	setScreen(level, level.getScreens().get(scrolledIndex));
 	    }
 	}
 }

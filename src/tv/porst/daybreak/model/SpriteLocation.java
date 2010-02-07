@@ -4,11 +4,18 @@ public class SpriteLocation
 {
 	private final int x;
 	private final int y;
+	private final Sprite sprite;
 
-	public SpriteLocation(final byte spriteId, final byte location, final byte message)
+	public SpriteLocation(final Sprite sprite, final byte location, final byte message)
 	{
+		this.sprite = sprite;
 		x = location & 0xF;
 		y = (location >>> 4) & 0xF;
+	}
+
+	public Sprite getSprite()
+	{
+		return sprite;
 	}
 
 	public int getX()

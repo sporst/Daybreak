@@ -48,10 +48,12 @@ public class BlockBitmap extends BufferedImage
 		final Image lowerLeft = getTileBitmap(block.getTile3(), start, tileData, attribute.bottomLeft(), palette);
 		final Image lowerRight = getTileBitmap(block.getTile4(), start, tileData, attribute.bottomRight(), palette);
 
-		getGraphics().drawImage(upperLeft, 0, 0, null);
-		getGraphics().drawImage(upperRight, 8, 0, null);
-		getGraphics().drawImage(lowerLeft, 0, 8, null);
-		getGraphics().drawImage(lowerRight, 8, 8, null);
+		final Graphics g = getGraphics();
+
+		g.drawImage(upperLeft, 0, 0, null);
+		g.drawImage(upperRight, 8, 0, null);
+		g.drawImage(lowerLeft, 0, 8, null);
+		g.drawImage(lowerRight, 8, 8, null);
 	}
 
 	private Image getTileBitmap(final int tile, final int start, final IFilledList<TileData> tileData, final int attribute, final Palette palette)
@@ -68,6 +70,6 @@ public class BlockBitmap extends BufferedImage
 			return ERROR_TILE;
 		}
 
-		return new TileBitmap(tileData.get(tileIndex1), attribute, palette);
+		return new TileBitmap(tileData.get(tileIndex1), attribute, palette, false);
 	}
 }

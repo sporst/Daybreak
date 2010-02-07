@@ -30,9 +30,9 @@ public final class FaxanaduRom
 
 		final List<Palette> palettes = PaletteReader.read(data);
 
-		final List<Level> levels = LevelDataReader.readLevelData(data, tileInformation, palettes, gameData);
+		final List<Sprite> sprites = SpriteReader.read(data, palettes.get(0x1C));
 
-		final List<Sprite> sprites = SpriteReader.read(data, palettes.get(0));
+		final List<Level> levels = LevelDataReader.readLevelData(data, tileInformation, palettes, gameData, sprites);
 
 		return new FaxanaduRom(levels, tileInformation, palettes, sprites);
 	}

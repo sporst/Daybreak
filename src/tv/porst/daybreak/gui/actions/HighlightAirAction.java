@@ -6,13 +6,13 @@ import javax.swing.AbstractAction;
 
 import tv.porst.daybreak.gui.IBlockHighlighterOptions;
 
-public class HighlightDoorsAction extends AbstractAction
+public class HighlightAirAction extends AbstractAction
 {
 	private final IBlockHighlighterOptions options;
 
-	public HighlightDoorsAction(final IBlockHighlighterOptions options)
+	public HighlightAirAction(final IBlockHighlighterOptions options)
 	{
-		super("Doors");
+		super("Air");
 
 		this.options = options;
 	}
@@ -20,6 +20,6 @@ public class HighlightDoorsAction extends AbstractAction
 	@Override
 	public void actionPerformed(final ActionEvent e)
 	{
-		options.setHighlightDoors(!options.getHighlightDoors());
+		options.setHighlightAir(!options.getHighlightAir());
 	}
 }

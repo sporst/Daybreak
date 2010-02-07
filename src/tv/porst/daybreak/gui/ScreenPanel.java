@@ -27,6 +27,7 @@ import javax.swing.TransferHandler;
 
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
+import tv.porst.daybreak.gui.blocks.IBlockHighlightingOptionsListener;
 import tv.porst.daybreak.gui.sprites.IDragSpriteProvider;
 import tv.porst.daybreak.gui.sprites.SpriteBitmap;
 import tv.porst.daybreak.gui.sprites.SpriteTransferHandler;
@@ -66,7 +67,7 @@ public class ScreenPanel extends JPanel
 
 	private final ScreenPanelOptions options = new ScreenPanelOptions();
 
-	private final IScreenPanelOptionsListener internalScreenPanelOptionsListener = new InternalScreenPanelOptionsListener();
+	private final IBlockHighlightingOptionsListener internalScreenPanelOptionsListener = new InternalScreenPanelOptionsListener();
 
 	public ScreenPanel(final Level level, final Screen screen)
 	{
@@ -84,7 +85,7 @@ public class ScreenPanel extends JPanel
 		addMouseMotionListener(internalMouseListener);
 		addMouseWheelListener(internalMouseListener);
 
-		options.addListener(internalScreenPanelOptionsListener);
+		options.getHighlightingOptions().addListener(internalScreenPanelOptionsListener);
 	}
 
 	private Sprite getSprite(final int col, final int row)
@@ -400,8 +401,14 @@ public class ScreenPanel extends JPanel
 	    }
 	}
 
-	private class InternalScreenPanelOptionsListener implements IScreenPanelOptionsListener
+	private class InternalScreenPanelOptionsListener implements IBlockHighlightingOptionsListener
 	{
+		@Override
+		public void changedAirHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
+
 		@Override
 		public void changedDoorHighlighting(final boolean highlighted)
 		{

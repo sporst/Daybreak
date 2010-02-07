@@ -1,4 +1,4 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.blocks;
 
 import java.awt.event.MouseEvent;
 

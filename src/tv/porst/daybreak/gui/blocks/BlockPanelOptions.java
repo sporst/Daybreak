@@ -1,7 +1,9 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.blocks;
+
+import tv.porst.daybreak.gui.BlockHighlightingOptions;
 
 
-public class ScreenPanelOptions
+public class BlockPanelOptions
 {
 	private final BlockHighlightingOptions highlightingOptions = new BlockHighlightingOptions();
 

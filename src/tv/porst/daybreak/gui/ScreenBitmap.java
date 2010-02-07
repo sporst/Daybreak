@@ -41,7 +41,7 @@ public class ScreenBitmap extends BufferedImage
 
 				final BlockBitmap bitmap = new BlockBitmap(block, screen.getTiles(), screen.getPalette());
 
-				draw(options, block, bitmap);
+				BlockHighlighter.highlight(options.getHighlightingOptions(), block, bitmap);
 
 				if (highlightedBlock == block || highlightedBlock == null)
 				{
@@ -101,32 +101,6 @@ public class ScreenBitmap extends BufferedImage
 					g.setColor(Color.RED);
 					g.drawRect(x * TILE_WIDTH, y * TILE_WIDTH, TILE_WIDTH - 1, TILE_WIDTH - 1);
 				}
-			}
-		}
-	}
-
-	private void draw(final ScreenPanelOptions options, final Block block, final BlockBitmap bitmap)
-	{
-		Color color = null;
-
-		final Graphics g = bitmap.getGraphics();
-
-		if (block.getProperty().isSolid() && options.getHighlightSolidBlocks())
-		{
-			color = Color.GREEN;
-		}
-		else if (block.getProperty().isDoor() && options.getHighlightDoors())
-		{
-			color = Color.RED;
-		}
-
-		if (color != null)
-		{
-			g.setColor(color);
-
-			for (int i=0;i<2 * bitmap.getWidth();i+=2)
-			{
-				g.drawLine(0, i, i, 0);
 			}
 		}
 	}

@@ -16,6 +16,11 @@ public class BlockProperty
 		return value;
 	}
 
+	public boolean isAir()
+	{
+		return value == 0;
+	}
+
 	public boolean isDoor()
 	{
 		return value == 3;

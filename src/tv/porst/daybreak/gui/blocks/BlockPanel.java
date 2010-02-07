@@ -1,4 +1,4 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.blocks;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -20,6 +20,10 @@ import javax.swing.JPanel;
 import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
 import net.sourceforge.jnhf.romfile.TileData;
+import tv.porst.daybreak.gui.BlockBitmap;
+import tv.porst.daybreak.gui.BlockHighlighter;
+import tv.porst.daybreak.gui.TileTransferable;
+import tv.porst.daybreak.gui.Transparency;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.TileInformation;
 
@@ -37,6 +41,10 @@ public class BlockPanel extends JPanel
 
 	private final ListenerProvider<IBlockPanelListener> listeners = new ListenerProvider<IBlockPanelListener>();
 
+	private final BlockPanelOptions options = new BlockPanelOptions();
+
+	private final IBlockHighlightingOptionsListener internalOptionsListener = new InternalOptionsListener();
+
 	public BlockPanel(final Block[] blocks, final TileInformation tileInformation, final Palette palette)
 	{
 		this.blocks = blocks.clone();
@@ -47,6 +55,8 @@ public class BlockPanel extends JPanel
 
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
+
+		options.getHighlightingOptions().addListener(internalOptionsListener);
 
 		setPreferredSize(new Dimension(BLOCK_PER_ROW * BLOCK_SIZE, blocks.length / BLOCK_PER_ROW * BLOCK_SIZE));
 	}
@@ -69,6 +79,8 @@ public class BlockPanel extends JPanel
 			final Block block = blocks[i];
 
 			final BlockBitmap bitmap = new BlockBitmap(block, tileInformation, palette);
+
+			BlockHighlighter.highlight(options.getHighlightingOptions(), block, bitmap);
 
 			final int row = i / BLOCK_PER_ROW;
 			final int col = i % BLOCK_PER_ROW;
@@ -175,7 +187,7 @@ public class BlockPanel extends JPanel
 	{
 	    private void showPopupMenu(final MouseEvent event, final Block block)
 		{
-	    	final BlockPanelPopupMenu menu = new BlockPanelPopupMenu(block, tileInformation, palette);
+	    	final BlockPanelPopupMenu menu = new BlockPanelPopupMenu(block, options, tileInformation, palette);
 
 	    	menu.show(BlockPanel.this, event.getX(), event.getY());
 		}
@@ -262,5 +274,26 @@ public class BlockPanel extends JPanel
 
 	    	repaint();
 	    }
+	}
+
+	private class InternalOptionsListener implements IBlockHighlightingOptionsListener
+	{
+		@Override
+		public void changedAirHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
+
+		@Override
+		public void changedDoorHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
+
+		@Override
+		public void changedSolidBlockHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
 	}
 }

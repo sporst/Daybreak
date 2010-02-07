@@ -1,23 +1,25 @@
 package tv.porst.daybreak.gui;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.swing.AbstractListModel;
 
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.IScreenListener;
-import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.Screen;
 
 public class ScreenSelectionListModel extends AbstractListModel
 {
-	private Level level;
-
 	private final InternalScreenListener internalScreenListener = new InternalScreenListener();
 
-	public ScreenSelectionListModel(final Level level)
-	{
-		this.level = level;
+	private final List<Screen> screens;
 
-		for (final Screen screen : level.getScreens())
+	public ScreenSelectionListModel(final List<Screen> screens)
+	{
+		this.screens = new ArrayList<Screen>(screens);
+
+		for (final Screen screen : screens)
 		{
 			screen.addListener(internalScreenListener);
 		}
@@ -29,20 +31,21 @@ public class ScreenSelectionListModel extends AbstractListModel
 		return null;
 	}
 
-	public Level getLevel()
+	public List<Screen> getScreens()
 	{
-		return level;
+		return new ArrayList<Screen>(screens);
 	}
 
 	@Override
 	public int getSize()
 	{
-		return level.getScreens().size();
+		return screens.size();
 	}
 
-	public void setLevel(final Level level)
+	public void setScreens(final List<Screen> screens)
 	{
-		this.level = level;
+		this.screens.clear();
+		this.screens.addAll(screens);
 
 		fireContentsChanged(this, 0, getSize());
 	}

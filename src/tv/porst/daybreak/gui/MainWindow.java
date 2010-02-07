@@ -1,7 +1,12 @@
 package tv.porst.daybreak.gui;
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+
 import javax.swing.JFrame;
-import javax.swing.JTabbedPane;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JPanel;
 
 import tv.porst.daybreak.model.FaxanaduRom;
 
@@ -13,14 +18,23 @@ public class MainWindow extends JFrame
 
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 
-		final JTabbedPane pane = new JTabbedPane();
+		add(new ScreenTab(rom));
 
-		pane.addTab("Levels", new ScreenTab(rom));
-		pane.addTab("Sprites", new SpritesTab(rom));
+		final JMenuBar mainMenu = new JMenuBar();
 
-		add(pane);
+		final JMenu fileMenu = new JMenu("File");
+
+		mainMenu.add(fileMenu);
+
+		setJMenuBar(mainMenu);
+
+		final JPanel panel = new JPanel();
+		panel.setPreferredSize(new Dimension(0, 20));
+
+		add(panel, BorderLayout.SOUTH);
 
 		pack();
 		setLocationRelativeTo(null);
+		setResizable(false);
 	}
 }

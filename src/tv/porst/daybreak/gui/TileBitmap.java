@@ -1,5 +1,6 @@
 package tv.porst.daybreak.gui;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 
 import net.sourceforge.jnhf.gui.Palette;
@@ -28,11 +29,11 @@ public class TileBitmap extends BufferedImage
 					continue;
 				}
 
-				final int color = Palettes.DEFAULT_PALETTE[paletteData[4 * attributeIndex + d[i * 8 + j]]];
+				final Color color = Palettes.FCEU_PAL_PALETTE[paletteData[4 * attributeIndex + d[i * 8 + j]]];
 
-				bitmap[4 * (i * 8 + j) + 0] = (color >>> 16) & 0xFF;
-				bitmap[4 * (i * 8 + j) + 1] = (color >>> 8)  & 0xFF;
-				bitmap[4 * (i * 8 + j) + 2] = (color >>> 0)  & 0xFF;
+				bitmap[4 * (i * 8 + j) + 0] = color.getRed();
+				bitmap[4 * (i * 8 + j) + 1] = color.getGreen();
+				bitmap[4 * (i * 8 + j) + 2] = color.getBlue();
 				bitmap[4 * (i * 8 + j) + 3] = 0xFF;
 			}
 		}

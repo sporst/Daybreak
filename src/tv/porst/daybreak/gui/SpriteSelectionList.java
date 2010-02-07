@@ -1,6 +1,8 @@
 package tv.porst.daybreak.gui;
 
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
@@ -14,6 +16,7 @@ import javax.swing.JList;
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import tv.porst.daybreak.model.FaxanaduRom;
 import tv.porst.daybreak.model.Sprite;
+import tv.porst.daybreak.model.SpriteSearcher;
 
 public class SpriteSelectionList extends JList
 {
@@ -27,6 +30,7 @@ public class SpriteSelectionList extends JList
 
 		this.rom = rom;
 
+		setVisibleRowCount(7);
 		setCellRenderer(new SpriteRenderer());
 	}
 
@@ -60,6 +64,8 @@ public class SpriteSelectionList extends JList
 
 		final SpriteBitmap bitmap = new SpriteBitmap(sprite);
 
+		final int count = SpriteSearcher.getScreensWithSprite(rom, sprite).size();
+
 		if (sprite.height() >= sprite.width())
 		{
 			final int NEW_HEIGHT = 64;
@@ -75,7 +81,28 @@ public class SpriteSelectionList extends JList
 			final int paddingLeft = (image.getWidth() - newWidth) / 2;
 			final int paddingTop = (image.getHeight() - NEW_HEIGHT) / 2;
 
-			image.getGraphics().drawImage(resizedImage, paddingLeft, paddingTop, null);
+			final Graphics g = image.getGraphics();
+
+			g.drawImage(resizedImage, paddingLeft, paddingTop, null);
+
+			if (count == 0)
+			{
+				g.setColor(Color.RED);
+				g.drawString("          Unused", 0, image.getHeight() - 6);
+			}
+			else
+			{
+				g.setColor(Color.WHITE);
+
+				if (count == 1)
+				{
+					g.drawString("     Used 1 time", 0, image.getHeight() - 6);
+				}
+				else
+				{
+					g.drawString(String.format("     Used %d times", count), 0, image.getHeight() - 6);
+				}
+			}
 
 			return image;
 		}

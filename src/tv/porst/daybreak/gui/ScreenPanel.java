@@ -67,7 +67,7 @@ public class ScreenPanel extends JPanel
 	{
 		super.paintComponent(g);
 
-		final ScreenBitmap bitmap = new ScreenBitmap(screen, metaData, mouseRow, mouseCol, highlightedBlock);
+		final ScreenBitmap bitmap = new ScreenBitmap(screen, metaData.getBlocks(), mouseRow, mouseCol, highlightedBlock);
 
 		g.drawImage(bitmap, 0, 0, 2 * bitmap.getWidth(), 2 * bitmap.getHeight(), null);
 	}
@@ -90,6 +90,18 @@ public class ScreenPanel extends JPanel
 		this.metaData = level.getMetaData();
 
 		repaint();
+
+		for (final IScreenPanelListener listener : listeners)
+		{
+			try
+			{
+				listener.changedScreen(this, level, screen);
+			}
+			catch(final Exception exception)
+			{
+				exception.printStackTrace();
+			}
+		}
 	}
 
 	public void setSelectedBlock(final Block block)

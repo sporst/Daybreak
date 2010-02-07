@@ -14,6 +14,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import net.sourceforge.jnhf.helpers.ListenerProvider;
+import net.sourceforge.jnhf.helpers.Pair;
 import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.Screen;
 
@@ -43,7 +44,7 @@ public class ScreenSelectionPanel extends JPanel
 
 		final JPanel innerPanel = new JPanel(new BorderLayout());
 
-		screenSelectionList = new ScreenSelectionList(levels.get(0));
+		screenSelectionList = new ScreenSelectionList(merge(levels.get(0)));
 		screenSelectionList.addListSelectionListener(new InternalListSelectionListener());
 
 		innerPanel.add(new JScrollPane(screenSelectionList));
@@ -53,16 +54,27 @@ public class ScreenSelectionPanel extends JPanel
 		add(innerPanel);
 	}
 
+	private List<Pair<Level, Screen>> merge(final Level level)
+	{
+		final List<Pair<Level, Screen>> screens = new ArrayList<Pair<Level,Screen>>();
+
+		for (final Screen screen : level.getScreens())
+		{
+			screens.add(new Pair<Level, Screen>(level, screen));
+		}
+
+		return screens;
+	}
+
 	private void notifyListeners()
 	{
-		final Level level = screenSelectionList.getModel().getLevel();
-		final Screen screen = level.getScreens().get(screenSelectionList.getSelectedIndex());
+		final Pair<Level, Screen> screen = screenSelectionList.getScreens().get(screenSelectionList.getSelectedIndex());
 
 		for (final IScreenSelectionListener listener : listeners)
 		{
 			try
 			{
-				listener.selectedScreen(level, screen);
+				listener.selectedScreen(screen.first(), screen.second());
 			}
 			catch(final Exception exception)
 			{
@@ -81,6 +93,12 @@ public class ScreenSelectionPanel extends JPanel
 		listeners.removeListener(listener);
 	}
 
+	public void setScreen(final Level level, final Screen screen)
+	{
+		levelBox.setLevel(level);
+		screenSelectionList.setSelectedScreen(screen);
+	}
+
 	private class InternalItemListener implements ItemListener
 	{
 		@Override
@@ -88,7 +106,7 @@ public class ScreenSelectionPanel extends JPanel
 		{
 			final Level level = ((LevelItem) levelBox.getSelectedItem()).getLevel();
 
-			screenSelectionList.getModel().setLevel(level);
+			screenSelectionList.setScreens(merge(level));
 
 			if (screenSelectionList.getSelectedIndex() == 0)
 			{

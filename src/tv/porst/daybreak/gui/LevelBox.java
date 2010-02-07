@@ -19,4 +19,17 @@ public class LevelBox extends JComboBox
 		addItem(new LevelItem("Towns", levels.get(2)));
 		addItem(new LevelItem("Buildings", levels.get(6)));
 	}
+
+	public void setLevel(final Level level)
+	{
+		for (int i=0;i<getItemCount();i++)
+		{
+			if (((LevelItem) getItemAt(i)).getLevel() == level && i != getSelectedIndex())
+			{
+				setSelectedIndex(i);
+
+				return;
+			}
+		}
+	}
 }

@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.util.List;
 
 import tv.porst.daybreak.model.Block;
-import tv.porst.daybreak.model.MetaData;
 import tv.porst.daybreak.model.Screen;
 import tv.porst.daybreak.model.Sprite;
 import tv.porst.daybreak.model.SpriteLocation;
@@ -18,12 +17,11 @@ public class ScreenBitmap extends BufferedImage
 	private static int TILES_Y = 13;
 	private static int TILE_WIDTH = 16;
 
-	public ScreenBitmap(final Screen screen, final MetaData metaData, final int mouseRow, final int mouseCol, final Block highlightedBlock)
+	public ScreenBitmap(final Screen screen, final Block[] blocks, final int mouseRow, final int mouseCol, final Block highlightedBlock)
 	{
 		super(16 * 16, 16 * 13, TYPE_3BYTE_BGR);
 
 		final int[][] squareNumbers = screen.getSquareNumbers();
-		final Block[] blocks = metaData.getBlocks();
 		final List<SpriteLocation> sprites = screen.getSpriteData();
 
 		final Graphics g = getGraphics();

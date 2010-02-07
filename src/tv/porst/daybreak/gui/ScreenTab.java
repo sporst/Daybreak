@@ -1,14 +1,24 @@
 package tv.porst.daybreak.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.TitledBorder;
 
+import net.sourceforge.jnhf.gui.PalettePanel;
+import tv.porst.daybreak.gui.actions.ShowScreensWithSpriteAction;
 import tv.porst.daybreak.model.Block;
+import tv.porst.daybreak.model.EditedScreenModel;
 import tv.porst.daybreak.model.FaxanaduRom;
+import tv.porst.daybreak.model.IEditedScreenModelListener;
 import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.Screen;
 
@@ -20,6 +30,14 @@ public class ScreenTab extends JPanel
 	private final BlockPanel blockPanel;
 	private final IScreenPanelListener internalScreenPanelListener = new InternalScreenPanelListener();
 	private final IBlockPanelListener internalBlockPanelListener = new InternalBlockPanelListener();
+	private final PalettePanel palettePanel;
+	private final MouseListener internalSpriteListMouseListener = new InternalSpriteListMouseListener();
+	private final SpriteSelectionList spriteSelectionList;
+	private final FaxanaduRom rom;
+
+	private final EditedScreenModel model = new EditedScreenModel();
+	private final IEditedScreenModelListener internalSelectionListener = new InternalEditedScreenModelListener();
+	private final ScreenSelectionPanel screenSelectionPanel;
 
 	public ScreenTab(final FaxanaduRom rom)
 	{
@@ -27,6 +45,8 @@ public class ScreenTab extends JPanel
 
 		final int screenIndex = 0;
 		final int levelIndex = 0;
+
+		this.rom = rom;
 
 		final Level level = rom.getLevels().get(levelIndex);
 		final Screen screen = level.getScreens().get(screenIndex);
@@ -37,9 +57,22 @@ public class ScreenTab extends JPanel
 		screenPanel = new ScreenPanel(level, screen);
 		screenPanel.addListener(internalScreenPanelListener );
 
-		outerScreenPanel.add(screenPanel);
+		palettePanel = new PalettePanel(screen.getPalette());
 
-		outerScreenPanel.setBorder(new TitledBorder("Screen"));
+		final JPanel outerPalettePanel = new JPanel(new BorderLayout());
+		outerPalettePanel.setBorder(new TitledBorder("Screen Palette"));
+		outerPalettePanel.setPreferredSize(new Dimension(palettePanel.getPreferredSize().width + 10, palettePanel.getPreferredSize().height + 30));
+
+		outerPalettePanel.add(palettePanel, BorderLayout.NORTH);
+
+		outerScreenPanel.add(outerPalettePanel, BorderLayout.NORTH);
+
+		final JPanel innerScreenPanel = new JPanel(new BorderLayout());
+
+		innerScreenPanel.add(screenPanel);
+		innerScreenPanel.setBorder(new TitledBorder("Screen"));
+
+		outerScreenPanel.add(innerScreenPanel);
 
 		leftPanel.add(outerScreenPanel);
 
@@ -67,10 +100,30 @@ public class ScreenTab extends JPanel
 
 		add(leftPanel);
 
-		final ScreenSelectionPanel screenSelectionPanel = new ScreenSelectionPanel(rom.getLevels());
+		final JPanel spritePanel = new JPanel(new BorderLayout());
+		spritePanel.setBorder(new TitledBorder("Sprites"));
+
+		spriteSelectionList = new SpriteSelectionList(rom);
+		spriteSelectionList.addMouseListener(internalSpriteListMouseListener );
+
+		spritePanel.add(new JScrollPane(spriteSelectionList));
+
+		add(spritePanel, BorderLayout.EAST);
+
+		screenSelectionPanel = new ScreenSelectionPanel(rom.getLevels());
 		screenSelectionPanel.addListener(internalListener);
 
 		add(screenSelectionPanel, BorderLayout.WEST);
+
+		model.addListener(internalSelectionListener);
+	}
+
+	private void selectScreen(final Level level, final Screen screen)
+	{
+		screenSelectionPanel.setScreen(level, screen);
+		screenPanel.setScreen(level, screen);
+		tilePanel.setTiles(screen.getTiles(), screen.getPalette());
+		blockPanel.setBlocks(level.getMetaData().getBlocks(), screen.getTiles(), screen.getPalette());
 	}
 
 	private void updateTileHighlighting(final Block block)
@@ -112,8 +165,23 @@ public class ScreenTab extends JPanel
 		}
 	}
 
+	private class InternalEditedScreenModelListener implements IEditedScreenModelListener
+	{
+		@Override
+		public void changedScreen(final Level level, final Screen screen)
+		{
+			selectScreen(level, screen);
+		}
+	}
+
 	private class InternalScreenPanelListener implements IScreenPanelListener
 	{
+		@Override
+		public void changedScreen(final ScreenPanel screenPanel, final Level level, final Screen screen)
+		{
+			palettePanel.setPalette(screen.getPalette());
+		}
+
 		@Override
 		public void hoveredBlock(final Block block)
 		{
@@ -128,9 +196,40 @@ public class ScreenTab extends JPanel
 		@Override
 		public void selectedScreen(final Level level, final Screen screen)
 		{
-			screenPanel.setScreen(level, screen);
-			tilePanel.setTiles(screen.getTiles(), screen.getPalette());
-			blockPanel.setBlocks(level.getMetaData().getBlocks(), screen.getTiles(), screen.getPalette());
+			selectScreen(level, screen);
 		}
+	}
+
+	private class InternalSpriteListMouseListener extends MouseAdapter
+	{
+
+		private void showPopupMenu(final MouseEvent e)
+		{
+	    	final int index = spriteSelectionList.locationToIndex(e.getPoint());
+
+	    	final JPopupMenu menu = new JPopupMenu();
+
+	    	menu.add(new JMenuItem(new ShowScreensWithSpriteAction(rom, rom.getSprites().get(index), model)));
+
+	    	menu.show(e.getComponent(), e.getX(), e.getY());
+		}
+
+	    @Override
+		public void mousePressed(final MouseEvent e)
+	    {
+	    	if (e.isPopupTrigger())
+	    	{
+	    		showPopupMenu(e);
+	    	}
+	    }
+
+		@Override
+	    public void mouseReleased(final MouseEvent e)
+	    {
+	    	if (e.isPopupTrigger())
+	    	{
+	    		showPopupMenu(e);
+	    	}
+	    }
 	}
 }

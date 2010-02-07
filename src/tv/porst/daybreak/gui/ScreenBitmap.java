@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.List;
 
+import tv.porst.daybreak.gui.sprites.SpriteBitmap;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.Screen;
 import tv.porst.daybreak.model.Sprite;

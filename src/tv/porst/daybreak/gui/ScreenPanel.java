@@ -6,18 +6,32 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DnDConstants;
+import java.awt.dnd.DropTarget;
+import java.awt.dnd.DropTargetAdapter;
+import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetDropEvent;
+import java.awt.dnd.DropTargetEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.io.IOException;
 
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
+import net.sourceforge.jnhf.helpers.ImageHelpers;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
+import tv.porst.daybreak.gui.sprites.SpriteBitmap;
+import tv.porst.daybreak.gui.sprites.SpriteTransferable;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.MetaData;
 import tv.porst.daybreak.model.Screen;
+import tv.porst.daybreak.model.Sprite;
+import tv.porst.daybreak.model.SpriteLocation;
 
 public class ScreenPanel extends JPanel
 {
@@ -26,7 +40,7 @@ public class ScreenPanel extends JPanel
 
 	private static int TILES_X = 16;
 	private static int TILES_Y = 13;
-	private static int TILE_WIDTH = 32;
+	private static int BLOCK_WIDTH = 32;
 
 	private final ListenerProvider<IScreenPanelListener> listeners = new ListenerProvider<IScreenPanelListener>();
 
@@ -39,13 +53,17 @@ public class ScreenPanel extends JPanel
 	private Block selectedBlock;
 	private Level level;
 
+	private Sprite draggedSprite = null;
+
 	public ScreenPanel(final Level level, final Screen screen)
 	{
 		this.level = level;
 		this.screen = screen;
 		this.metaData = level.getMetaData();
 
-		setPreferredSize(new Dimension(TILES_X * TILE_WIDTH, TILES_Y * TILE_WIDTH));
+		setPreferredSize(new Dimension(TILES_X * BLOCK_WIDTH, TILES_Y * BLOCK_WIDTH));
+
+		new DropTarget(this, new InternalDropTarget());
 
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
@@ -70,6 +88,13 @@ public class ScreenPanel extends JPanel
 		final ScreenBitmap bitmap = new ScreenBitmap(screen, metaData.getBlocks(), mouseRow, mouseCol, highlightedBlock);
 
 		g.drawImage(bitmap, 0, 0, 2 * bitmap.getWidth(), 2 * bitmap.getHeight(), null);
+
+		if (draggedSprite != null)
+		{
+			final SpriteBitmap d = new SpriteBitmap(draggedSprite);
+
+			g.drawImage(ImageHelpers.resize(d, d.getWidth() / 2, d.getHeight() / 2), mouseCol * BLOCK_WIDTH,  mouseRow * BLOCK_WIDTH, null);
+		}
 	}
 	public void removeListener(final IScreenPanelListener listener)
 	{
@@ -121,6 +146,87 @@ public class ScreenPanel extends JPanel
 		}
 	}
 
+	private class InternalDropTarget extends DropTargetAdapter
+	{
+	    @Override
+		public void dragEnter(final DropTargetDragEvent dtde)
+	    {
+			final Transferable t = dtde.getTransferable();
+
+			if (t.isDataFlavorSupported(SpriteTransferable.SPRITE_FLAVOR))
+			{
+	            try
+				{
+	            	draggedSprite = (Sprite)t.getTransferData(SpriteTransferable.SPRITE_FLAVOR);
+
+	            	repaint();
+				}
+				catch (final UnsupportedFlavorException e)
+				{
+					e.printStackTrace();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+	    }
+
+	    @Override
+		public void dragExit(final DropTargetEvent dte)
+	    {
+	    	draggedSprite = null;
+
+	    	repaint();
+	    }
+
+	    @Override
+		public void dragOver(final DropTargetDragEvent dtde)
+	    {
+	    	mouseCol = dtde.getLocation().x / BLOCK_WIDTH;
+	    	mouseRow = dtde.getLocation().y / BLOCK_WIDTH;
+
+	    	repaint();
+	    }
+
+		@Override
+		public void drop(final DropTargetDropEvent dtde)
+		{
+			final Transferable t = dtde.getTransferable();
+
+			if (t.isDataFlavorSupported(SpriteTransferable.SPRITE_FLAVOR))
+			{
+				dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
+
+	            try
+				{
+					final Sprite sprite = (Sprite)t.getTransferData(SpriteTransferable.SPRITE_FLAVOR);
+
+					final int row = dtde.getLocation().y / BLOCK_WIDTH;
+					final int col = dtde.getLocation().x / BLOCK_WIDTH;
+
+					screen.addSprite(new SpriteLocation(sprite, col, row, (byte) 0));
+
+					dtde.getDropTargetContext().dropComplete(true);
+
+					draggedSprite = null;
+				}
+				catch (final UnsupportedFlavorException e)
+				{
+					e.printStackTrace();
+				}
+				catch (final IOException e)
+				{
+					e.printStackTrace();
+				}
+			}
+			else
+			{
+				dtde.rejectDrop();
+			}
+		}
+	}
+
 	private class InternalMouseListener extends MouseAdapter
 	{
 	    private void showPopupMenu(final MouseEvent event, final Block block)
@@ -133,8 +239,8 @@ public class ScreenPanel extends JPanel
 	    @Override
 	    public void mouseDragged(final MouseEvent e)
 	    {
-	    	mouseCol = e.getX() / TILE_WIDTH;
-	    	mouseRow = e.getY() / TILE_WIDTH;
+	    	mouseCol = e.getX() / BLOCK_WIDTH;
+	    	mouseRow = e.getY() / BLOCK_WIDTH;
 
 			if (selectedBlock != null)
 			{
@@ -168,8 +274,8 @@ public class ScreenPanel extends JPanel
 	    @Override
 		public void mouseMoved(final MouseEvent e)
 	    {
-	    	mouseRow = e.getY() / TILE_WIDTH;
-	    	mouseCol = e.getX() / TILE_WIDTH;
+	    	mouseRow = e.getY() / BLOCK_WIDTH;
+	    	mouseCol = e.getX() / BLOCK_WIDTH;
 
 	    	final Block block = metaData.getBlocks()[screen.getSquareNumbers()[mouseRow][mouseCol]];
 
@@ -191,8 +297,8 @@ public class ScreenPanel extends JPanel
 	    @Override
 		public void mousePressed(final MouseEvent event)
 		{
-			mouseCol = event.getX() / TILE_WIDTH;
-			mouseRow = event.getY() / TILE_WIDTH;
+			mouseCol = event.getX() / BLOCK_WIDTH;
+			mouseRow = event.getY() / BLOCK_WIDTH;
 
 			final Block block = metaData.getBlocks()[screen.getSquareNumbers()[mouseRow][mouseCol]];
 
@@ -207,8 +313,8 @@ public class ScreenPanel extends JPanel
 		@Override
 		public void mouseReleased(final MouseEvent event)
 	    {
-	    	mouseCol = event.getX() / TILE_WIDTH;
-	    	mouseRow = event.getY() / TILE_WIDTH;
+	    	mouseCol = event.getX() / BLOCK_WIDTH;
+	    	mouseRow = event.getY() / BLOCK_WIDTH;
 
 	    	final Block block = metaData.getBlocks()[screen.getSquareNumbers()[mouseRow][mouseCol]];
 

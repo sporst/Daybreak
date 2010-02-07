@@ -1,38 +1,42 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.sprites;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 
-import net.sourceforge.jnhf.romfile.TileData;
-import tv.porst.daybreak.model.TileInformation;
+import tv.porst.daybreak.model.Sprite;
 
-public class TileTransferable implements Transferable
+public class SpriteTransferable implements Transferable
 {
 	private static final DataFlavor[] SUPPORTED_FLAVORS = new DataFlavor[1];
 
-	public static final DataFlavor TILE_FLAVOR;
+	public static final DataFlavor SPRITE_FLAVOR;
 
-	private final TileData m_tiles;
+	private final Sprite m_sprite;
 
 	static
 	{
-		TILE_FLAVOR = new DataFlavor(TileInformation.class, "TileInformation");
-		SUPPORTED_FLAVORS[0] = TILE_FLAVOR;
+		SPRITE_FLAVOR = new DataFlavor(Sprite.class, "Sprite");
+		SUPPORTED_FLAVORS[0] = SPRITE_FLAVOR;
 	}
 
-	public TileTransferable(final TileData tileData)
+	public SpriteTransferable(final Sprite sprite)
 	{
-		m_tiles = tileData;
+		m_sprite = sprite;
+	}
+
+	public Sprite getSprite()
+	{
+		return m_sprite;
 	}
 
 	@Override
 	public Object getTransferData(final DataFlavor flavor) throws UnsupportedFlavorException, IOException
 	{
-		if (flavor.equals(TILE_FLAVOR))
+		if (flavor.equals(SPRITE_FLAVOR))
 		{
-			return m_tiles;
+			return m_sprite;
 		}
 
 		throw new UnsupportedFlavorException(flavor);
@@ -47,6 +51,6 @@ public class TileTransferable implements Transferable
 	@Override
 	public boolean isDataFlavorSupported(final DataFlavor flavor)
 	{
-		return flavor.equals(TILE_FLAVOR);
+		return flavor.equals(SPRITE_FLAVOR);
 	}
 }

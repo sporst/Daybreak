@@ -15,6 +15,7 @@ import javax.swing.border.TitledBorder;
 
 import net.sourceforge.jnhf.gui.PalettePanel;
 import tv.porst.daybreak.gui.actions.ShowScreensWithSpriteAction;
+import tv.porst.daybreak.gui.sprites.SpriteSelectionList;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.EditedScreenModel;
 import tv.porst.daybreak.model.FaxanaduRom;

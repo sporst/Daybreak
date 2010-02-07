@@ -28,6 +28,23 @@ public final class Screen
 		listeners.addListener(listener);
 	}
 
+	public void addSprite(final SpriteLocation spriteLocation)
+	{
+		spriteData.add(spriteLocation);
+
+		for (final IScreenListener listener : listeners)
+		{
+			try
+			{
+				listener.addedSprite(this, spriteLocation);
+			}
+			catch(final Exception exception)
+			{
+				exception.printStackTrace();
+			}
+		}
+	}
+
 	public Palette getPalette()
 	{
 		return palette;

@@ -45,7 +45,7 @@ public class TilePanel extends JPanel
 		this.palette = palette;
 
 		setTransferHandler(tileTransferHandler);
-		addMouseListener(internalMouseListener );
+		addMouseListener(internalMouseListener);
 
 		setPreferredSize(new Dimension(TILE_PER_LINE * TILE_WIDTH, information.getTileData().size() / TILE_PER_LINE * TILE_WIDTH));
 	}

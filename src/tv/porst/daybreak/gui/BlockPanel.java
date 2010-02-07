@@ -9,10 +9,8 @@ import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
+import java.awt.dnd.DropTargetAdapter;
 import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
@@ -116,23 +114,8 @@ public class BlockPanel extends JPanel
 		repaint();
 	}
 
-	private class InternalDropTarget implements DropTargetListener
+	private class InternalDropTarget extends DropTargetAdapter
 	{
-		@Override
-		public void dragEnter(final DropTargetDragEvent dtde)
-		{
-		}
-
-		@Override
-		public void dragExit(final DropTargetEvent dte)
-		{
-		}
-
-		@Override
-		public void dragOver(final DropTargetDragEvent dtde)
-		{
-		}
-
 		@Override
 		public void drop(final DropTargetDropEvent dtde)
 		{
@@ -185,11 +168,6 @@ public class BlockPanel extends JPanel
 			{
 				dtde.rejectDrop();
 			}
-		}
-
-		@Override
-		public void dropActionChanged(final DropTargetDragEvent dtde)
-		{
 		}
 	}
 

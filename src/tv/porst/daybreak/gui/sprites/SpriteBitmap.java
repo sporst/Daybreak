@@ -1,8 +1,9 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.sprites;
 
 import java.awt.image.BufferedImage;
 
 import net.sourceforge.jnhf.romfile.TileData;
+import tv.porst.daybreak.gui.TileBitmap;
 import tv.porst.daybreak.model.Sprite;
 
 public class SpriteBitmap extends BufferedImage

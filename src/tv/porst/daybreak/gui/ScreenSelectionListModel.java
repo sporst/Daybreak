@@ -8,6 +8,7 @@ import javax.swing.AbstractListModel;
 import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.IScreenListener;
 import tv.porst.daybreak.model.Screen;
+import tv.porst.daybreak.model.SpriteLocation;
 
 public class ScreenSelectionListModel extends AbstractListModel
 {
@@ -52,6 +53,12 @@ public class ScreenSelectionListModel extends AbstractListModel
 
 	private class InternalScreenListener implements IScreenListener
 	{
+		@Override
+		public void addedSprite(final Screen screen, final SpriteLocation spriteLocation)
+		{
+			fireContentsChanged(this, 0, getSize());
+		}
+
 		@Override
 		public void changedBlock(final Screen screen, final int x, final int y, final Block block)
 		{

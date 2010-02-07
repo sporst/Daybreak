@@ -17,6 +17,7 @@ import tv.porst.daybreak.model.Block;
 import tv.porst.daybreak.model.IScreenListener;
 import tv.porst.daybreak.model.Level;
 import tv.porst.daybreak.model.Screen;
+import tv.porst.daybreak.model.SpriteLocation;
 
 public class ScreenSelectionList extends JList
 {
@@ -83,10 +84,20 @@ public class ScreenSelectionList extends JList
 
 	public void setScreens(final List<Pair<Level, Screen>> merge)
 	{
+		for (final Screen screen : extractScreens(screens))
+		{
+			screen.removeListener(internalScreenListener);
+		}
+
 		this.screens.clear();
 		this.screens.addAll(merge);
 
 		getModel().setScreens(extractScreens(merge));
+
+		for (final Screen screen : extractScreens(screens))
+		{
+			screen.addListener(internalScreenListener);
+		}
 	}
 
 	public void setSelectedScreen(final Screen screen)
@@ -97,9 +108,19 @@ public class ScreenSelectionList extends JList
 	private class InternalScreenListener implements IScreenListener
 	{
 		@Override
+		public void addedSprite(final Screen screen, final SpriteLocation spriteLocation)
+		{
+			images.remove(screen);
+
+			repaint();
+		}
+
+		@Override
 		public void changedBlock(final Screen screen, final int x, final int y, final Block block)
 		{
 			images.remove(screen);
+
+			repaint();
 		}
 	}
 

@@ -13,6 +13,13 @@ public class SpriteLocation
 		y = (location >>> 4) & 0xF;
 	}
 
+	public SpriteLocation(final Sprite sprite, final int col, final int row, final byte message)
+	{
+		this.sprite = sprite;
+		x = col;
+		y = row;
+	}
+
 	public Sprite getSprite()
 	{
 		return sprite;

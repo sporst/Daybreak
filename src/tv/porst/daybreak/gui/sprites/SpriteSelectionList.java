@@ -1,4 +1,4 @@
-package tv.porst.daybreak.gui;
+package tv.porst.daybreak.gui.sprites;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -12,6 +12,7 @@ import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.TransferHandler;
 
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import tv.porst.daybreak.model.FaxanaduRom;
@@ -24,11 +25,18 @@ public class SpriteSelectionList extends JList
 
 	private final FaxanaduRom rom;
 
+	private final SpriteDragProvider spriteDragProvider = new SpriteDragProvider();
+
+	private final TransferHandler spriteTransferHandler = new SpriteTransferHandler(spriteDragProvider);
+
 	public SpriteSelectionList(final FaxanaduRom rom)
 	{
 		super(new SpriteSelectionListModel(rom));
 
 		this.rom = rom;
+
+		setDragEnabled(true);
+		setTransferHandler(spriteTransferHandler);
 
 		setVisibleRowCount(7);
 		setCellRenderer(new SpriteRenderer());
@@ -42,11 +50,6 @@ public class SpriteSelectionList extends JList
 		{
 			return images.get(sprite);
 		}
-
-//		if (sprite == null)
-//		{
-//			return new ImageIcon(new BufferedImage(16, 16, BufferedImage.TYPE_3BYTE_BGR));
-//		}
 
 		final ImageIcon image = new ImageIcon(getNormalizedImage(sprite));
 
@@ -116,6 +119,15 @@ public class SpriteSelectionList extends JList
 	public SpriteSelectionListModel getModel()
 	{
 		return (SpriteSelectionListModel) super.getModel();
+	}
+
+	private class SpriteDragProvider implements IDragSpriteProvider
+	{
+		@Override
+		public Sprite getSprite()
+		{
+			return rom.getSprites().get(getSelectedIndex());
+		}
 	}
 
 	private class SpriteRenderer extends DefaultListCellRenderer

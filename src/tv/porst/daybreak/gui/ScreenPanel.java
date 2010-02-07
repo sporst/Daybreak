@@ -64,6 +64,10 @@ public class ScreenPanel extends JPanel
 
 	private final TransferHandler spriteTransferHandler = new SpriteTransferHandler(spriteDragProvider);
 
+	private final ScreenPanelOptions options = new ScreenPanelOptions();
+
+	private final IScreenPanelOptionsListener internalScreenPanelOptionsListener = new InternalScreenPanelOptionsListener();
+
 	public ScreenPanel(final Level level, final Screen screen)
 	{
 		this.level = level;
@@ -79,6 +83,8 @@ public class ScreenPanel extends JPanel
 		addMouseListener(internalMouseListener);
 		addMouseMotionListener(internalMouseListener);
 		addMouseWheelListener(internalMouseListener);
+
+		options.addListener(internalScreenPanelOptionsListener);
 	}
 
 	private Sprite getSprite(final int col, final int row)
@@ -117,7 +123,7 @@ public class ScreenPanel extends JPanel
 	{
 		super.paintComponent(g);
 
-		final ScreenBitmap bitmap = new ScreenBitmap(screen, metaData.getBlocks(), mouseRow, mouseCol, highlightedBlock);
+		final ScreenBitmap bitmap = new ScreenBitmap(screen, options, metaData.getBlocks(), mouseRow, mouseCol, highlightedBlock);
 
 		g.drawImage(bitmap, 0, 0, 2 * bitmap.getWidth(), 2 * bitmap.getHeight(), null);
 
@@ -263,7 +269,7 @@ public class ScreenPanel extends JPanel
 	{
 	    private void showPopupMenu(final MouseEvent event, final Block block)
 		{
-	    	final ScreenPanelMenu menu = new ScreenPanelMenu(ScreenPanel.this, block);
+	    	final ScreenPanelMenu menu = new ScreenPanelMenu(ScreenPanel.this, options, block);
 
 	    	menu.show(ScreenPanel.this, event.getX(), event.getY());
 		}
@@ -392,6 +398,21 @@ public class ScreenPanel extends JPanel
 
 	    	setScreen(level, level.getScreens().get(scrolledIndex));
 	    }
+	}
+
+	private class InternalScreenPanelOptionsListener implements IScreenPanelOptionsListener
+	{
+		@Override
+		public void changedDoorHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
+
+		@Override
+		public void changedSolidBlockHighlighting(final boolean highlighted)
+		{
+			repaint();
+		}
 	}
 
 	private class SpriteDragProvider implements IDragSpriteProvider

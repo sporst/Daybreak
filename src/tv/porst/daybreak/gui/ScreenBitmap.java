@@ -18,7 +18,7 @@ public class ScreenBitmap extends BufferedImage
 	private static int TILES_Y = 13;
 	private static int TILE_WIDTH = 16;
 
-	public ScreenBitmap(final Screen screen, final Block[] blocks, final int mouseRow, final int mouseCol, final Block highlightedBlock)
+	public ScreenBitmap(final Screen screen, final ScreenPanelOptions options, final Block[] blocks, final int mouseRow, final int mouseCol, final Block highlightedBlock)
 	{
 		super(16 * 16, 16 * 13, TYPE_3BYTE_BGR);
 
@@ -41,7 +41,7 @@ public class ScreenBitmap extends BufferedImage
 
 				final BlockBitmap bitmap = new BlockBitmap(block, screen.getTiles(), screen.getPalette());
 
-				draw(block, bitmap);
+				draw(options, block, bitmap);
 
 				if (highlightedBlock == block || highlightedBlock == null)
 				{
@@ -105,17 +105,17 @@ public class ScreenBitmap extends BufferedImage
 		}
 	}
 
-	private void draw(final Block block, final BlockBitmap bitmap)
+	private void draw(final ScreenPanelOptions options, final Block block, final BlockBitmap bitmap)
 	{
 		Color color = null;
 
 		final Graphics g = bitmap.getGraphics();
 
-		if (block.getProperty().isSolid())
+		if (block.getProperty().isSolid() && options.getHighlightSolidBlocks())
 		{
 			color = Color.GREEN;
 		}
-		else if (block.getProperty().isDoor())
+		else if (block.getProperty().isDoor() && options.getHighlightDoors())
 		{
 			color = Color.RED;
 		}

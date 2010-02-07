@@ -39,6 +39,8 @@ public class ScreenSelectionList extends JList
 
 	private final List<Pair<Level, Screen>> screens;
 
+	private final ScreenPanelOptions options = new ScreenPanelOptions();
+
 	public ScreenSelectionList(final List<Pair<Level, Screen>> screens)
 	{
 		super(new ScreenSelectionListModel(extractScreens(screens)));
@@ -62,7 +64,7 @@ public class ScreenSelectionList extends JList
 			return images.get(screen);
 		}
 
-		final ScreenBitmap bitmap = new ScreenBitmap(screen, screens.get(index).first().getMetaData().getBlocks(), -1, -1, null);
+		final ScreenBitmap bitmap = new ScreenBitmap(screen, options , screens.get(index).first().getMetaData().getBlocks(), -1, -1, null);
 
 		final ImageIcon image = new ImageIcon(ImageHelpers.resize(bitmap, 16 * 8, 13 * 8));
 

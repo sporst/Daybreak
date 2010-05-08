@@ -7,7 +7,8 @@ Daybreak is a level editor for the classic NES game Faxanadu.
 
 2. Requirements
 
-Daybreak requires the NES Hacking Framework. See XXX for details.
+Daybreak requires the NES Hacking Framework. See http://github.com/sporst/NHF
+for details.
 
 2. License
 

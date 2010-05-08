@@ -41,6 +41,7 @@ public class ScreenTab extends JPanel
 	private final EditedScreenModel model = new EditedScreenModel();
 	private final IEditedScreenModelListener internalSelectionListener = new InternalEditedScreenModelListener();
 	private final ScreenSelectionPanel screenSelectionPanel;
+	private final MouseListener internalPaletteMouseListener = new InternalPaletteMouseListener();
 
 	public ScreenTab(final FaxanaduRom rom)
 	{
@@ -61,6 +62,7 @@ public class ScreenTab extends JPanel
 		screenPanel.addListener(internalScreenPanelListener );
 
 		palettePanel = new PalettePanel(screen.getPalette());
+		palettePanel.addMouseListener(internalPaletteMouseListener);
 
 		final JPanel outerPalettePanel = new JPanel(new BorderLayout());
 		outerPalettePanel.setBorder(new TitledBorder("Screen Palette"));
@@ -85,7 +87,7 @@ public class ScreenTab extends JPanel
 		outerBlockPanel.setBorder(new TitledBorder("Blocks"));
 
 		blockPanel = new BlockPanel(level.getMetaData().getBlocks(), screen.getTiles(), screen.getPalette());
-		blockPanel.addListener(internalBlockPanelListener );
+		blockPanel.addListener(internalBlockPanelListener);
 
 		outerBlockPanel.add(blockPanel);
 
@@ -175,6 +177,32 @@ public class ScreenTab extends JPanel
 		{
 			selectScreen(level, screen);
 		}
+	}
+
+	private class InternalPaletteMouseListener extends MouseAdapter
+	{
+		@Override
+		public void mouseReleased(final MouseEvent e)
+	    {
+			final int clickedColumn = e.getX() / 32;
+
+//			final Color clickedColor = Palettes.FCEU_PAL_PALETTE[palettePanel.getPalette().getData()[clickedColumn]];
+
+			if (SwingUtilities.isRightMouseButton(e))
+			{
+				final ColorSelectionDialog dialog = new ColorSelectionDialog()
+				{
+					@Override
+					protected void selected(final int index)
+					{
+						palettePanel.getPalette().setColor(clickedColumn, (byte) index);
+					}
+				};
+
+				dialog.setLocation(e.getXOnScreen(), e.getYOnScreen());
+				dialog.setVisible(true);
+			}
+	    }
 	}
 
 	private class InternalScreenPanelListener implements IScreenPanelListener

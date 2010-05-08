@@ -11,6 +11,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 
+import net.sourceforge.jnhf.gui.IPaletteListener;
+import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import net.sourceforge.jnhf.helpers.Pair;
 import tv.porst.daybreak.model.Block;
@@ -41,6 +43,8 @@ public class ScreenSelectionList extends JList
 
 	private final ScreenPanelOptions options = new ScreenPanelOptions();
 
+	private final IPaletteListener internalPaletteListener = new InternalPaletteListener();
+
 	public ScreenSelectionList(final List<Pair<Level, Screen>> screens)
 	{
 		super(new ScreenSelectionListModel(extractScreens(screens)));
@@ -52,6 +56,7 @@ public class ScreenSelectionList extends JList
 		for (final Screen screen : extractScreens(screens))
 		{
 			screen.addListener(internalScreenListener);
+			screen.getPalette().addListener(internalPaletteListener );
 		}
 	}
 
@@ -89,6 +94,7 @@ public class ScreenSelectionList extends JList
 		for (final Screen screen : extractScreens(screens))
 		{
 			screen.removeListener(internalScreenListener);
+			screen.getPalette().removeListener(internalPaletteListener);
 		}
 
 		this.screens.clear();
@@ -99,12 +105,30 @@ public class ScreenSelectionList extends JList
 		for (final Screen screen : extractScreens(screens))
 		{
 			screen.addListener(internalScreenListener);
+			screen.getPalette().addListener(internalPaletteListener);
 		}
 	}
 
 	public void setSelectedScreen(final Screen screen)
 	{
 		setSelectedIndex(extractScreens(screens).indexOf(screen));
+	}
+
+	private class InternalPaletteListener implements IPaletteListener
+	{
+		@Override
+		public void paletteChanged(final Palette palette, final int index, final byte colorIndex)
+		{
+			for (final Screen screen : extractScreens(screens))
+			{
+				if (screen.getPalette() == palette)
+				{
+					images.remove(screen);
+				}
+			}
+
+			repaint();
+		}
 	}
 
 	private class InternalScreenListener implements IScreenListener

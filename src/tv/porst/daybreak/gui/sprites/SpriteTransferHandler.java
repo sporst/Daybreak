@@ -25,6 +25,6 @@ public class SpriteTransferHandler extends TransferHandler
     @Override
 	public int getSourceActions(final JComponent c)
     {
-    	return COPY;
+    	return COPY_OR_MOVE;
     }
 }

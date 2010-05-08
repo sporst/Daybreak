@@ -25,6 +25,8 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.TransferHandler;
 
+import net.sourceforge.jnhf.gui.IPaletteListener;
+import net.sourceforge.jnhf.gui.Palette;
 import net.sourceforge.jnhf.helpers.ImageHelpers;
 import net.sourceforge.jnhf.helpers.ListenerProvider;
 import tv.porst.daybreak.gui.blocks.IBlockHighlightingOptionsListener;
@@ -69,11 +71,15 @@ public class ScreenPanel extends JPanel
 
 	private final IBlockHighlightingOptionsListener internalScreenPanelOptionsListener = new InternalScreenPanelOptionsListener();
 
+	private final IPaletteListener internalPaletteListener = new InternalPaletteListener();
+
 	public ScreenPanel(final Level level, final Screen screen)
 	{
 		this.level = level;
 		this.screen = screen;
 		this.metaData = level.getMetaData();
+
+		screen.getPalette().addListener(internalPaletteListener);
 
 		setPreferredSize(new Dimension(TILES_X * BLOCK_WIDTH, TILES_Y * BLOCK_WIDTH));
 
@@ -88,7 +94,7 @@ public class ScreenPanel extends JPanel
 		options.getHighlightingOptions().addListener(internalScreenPanelOptionsListener);
 	}
 
-	private Sprite getSprite(final int col, final int row)
+	private SpriteLocation getSprite(final int col, final int row)
 	{
 		final List<SpriteLocation> spriteData = screen.getSpriteData();
 
@@ -100,9 +106,7 @@ public class ScreenPanel extends JPanel
 					col >= sprite.getX() && col < sprite.getX() + sprite.getSprite().width() / 2 &&
 					row >= sprite.getY() && row < sprite.getY() + sprite.getSprite().height() / 2)
 			{
-				screen.removeSprite(sprite);
-
-				return sprite.getSprite();
+				return sprite;
 			}
 		}
 
@@ -135,11 +139,11 @@ public class ScreenPanel extends JPanel
 			g.drawImage(ImageHelpers.resize(d, d.getWidth() / 2, d.getHeight() / 2), mouseCol * BLOCK_WIDTH,  mouseRow * BLOCK_WIDTH, null);
 		}
 	}
+
 	public void removeListener(final IScreenPanelListener listener)
 	{
 		listeners.removeListener(listener);
 	}
-
 	public void setHighlightedBlock(final Block block)
 	{
 		this.highlightedBlock = block;
@@ -149,9 +153,13 @@ public class ScreenPanel extends JPanel
 
 	public void setScreen(final Level level, final Screen screen)
 	{
+		this.screen.getPalette().removeListener(internalPaletteListener);
+
 		this.level = level;
 		this.screen = screen;
 		this.metaData = level.getMetaData();
+
+		this.screen.getPalette().addListener(internalPaletteListener);
 
 		repaint();
 
@@ -348,10 +356,17 @@ public class ScreenPanel extends JPanel
 
 			if (SwingUtilities.isLeftMouseButton(event))
 			{
-				draggedSprite = getSprite(mouseCol, mouseRow);
+				final SpriteLocation clickedSprite = getSprite(mouseCol, mouseRow);
 
-				if (draggedSprite != null)
+				if (clickedSprite != null)
 				{
+					draggedSprite = clickedSprite.getSprite();
+
+					if (!event.isControlDown())
+					{
+						screen.removeSprite(clickedSprite);
+					}
+
 					final JComponent c = (JComponent) event.getSource();
 					final TransferHandler handler = c.getTransferHandler();
 					handler.exportAsDrag(c, event, TransferHandler.COPY);
@@ -399,6 +414,15 @@ public class ScreenPanel extends JPanel
 
 	    	setScreen(level, level.getScreens().get(scrolledIndex));
 	    }
+	}
+
+	private class InternalPaletteListener implements IPaletteListener
+	{
+		@Override
+		public void paletteChanged(final Palette palette, final int index, final byte colorIndex)
+		{
+			repaint();
+		}
 	}
 
 	private class InternalScreenPanelOptionsListener implements IBlockHighlightingOptionsListener

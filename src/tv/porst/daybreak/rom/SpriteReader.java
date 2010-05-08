@@ -72,7 +72,7 @@ public class SpriteReader
 			}
 		}
 
-		System.exit(0);
+//		System.exit(0);
 	}
 
 	private static byte[] readHorizontalSizes(final byte[] data)
